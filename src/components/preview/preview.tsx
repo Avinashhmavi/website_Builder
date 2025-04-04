@@ -57,8 +57,8 @@ function Preview({
             className="lg:hidden bg-gray-950 shadow-md text-white text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-900 hover:brightness-150 transition-all duration-100 cursor-pointer"
             onClick={() => setView("editor")}
           >
-            <FaLaptopCode />
-            View Code
+            <FaLaptopCode className="text-sm" />
+            Hide preview
           </button>
           {html === defaultHTML && (
             <a
@@ -73,7 +73,7 @@ function Preview({
             className="bg-white lg:bg-gray-950 shadow-md text-gray-950 lg:text-white text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-100 lg:border-gray-900 hover:brightness-150 transition-all duration-100 cursor-pointer"
             onClick={handleRefreshIframe}
           >
-            <TbReload />
+            <TbReload className="text-sm" />
             Refresh Preview
           </button>
         </div>

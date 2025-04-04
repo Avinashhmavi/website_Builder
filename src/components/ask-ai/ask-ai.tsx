@@ -150,7 +150,7 @@ function AskAI({
           className="bg-white lg:hidden -translate-y-[calc(100%+8px)] absolute left-0 top-0 shadow-md text-gray-950 text-xs font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-100 hover:brightness-150 transition-all duration-100 cursor-pointer"
           onClick={() => setView("preview")}
         >
-          <MdPreview />
+          <MdPreview className="text-sm" />
           View Preview
         </button>
       )}
