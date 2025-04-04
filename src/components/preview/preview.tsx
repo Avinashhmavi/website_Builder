@@ -58,7 +58,7 @@ function Preview({
             onClick={() => setView("editor")}
           >
             <FaLaptopCode />
-            Back to Editor
+            View Code
           </button>
           {html === defaultHTML && (
             <a

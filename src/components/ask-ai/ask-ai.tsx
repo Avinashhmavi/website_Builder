@@ -151,7 +151,7 @@ function AskAI({
           onClick={() => setView("preview")}
         >
           <MdPreview />
-          Back to Preview
+          View Preview
         </button>
       )}
       <div className="w-full relative flex items-center justify-between">
