@@ -51,24 +51,24 @@ function Preview({
         })}
         srcDoc={html}
       />
-      {!isAiWorking && (
-        <div className="flex items-center justify-start gap-3 absolute bottom-3 lg:bottom-5 max-lg:left-3 lg:right-5">
-          <button
-            className="lg:hidden bg-gray-950 shadow-md text-white text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-900 hover:brightness-150 transition-all duration-100 cursor-pointer"
-            onClick={() => setView("editor")}
+      <div className="flex items-center justify-start gap-3 absolute bottom-3 lg:bottom-5 max-lg:left-3 lg:right-5">
+        <button
+          className="lg:hidden bg-gray-950 shadow-md text-white text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-900 hover:brightness-150 transition-all duration-100 cursor-pointer"
+          onClick={() => setView("editor")}
+        >
+          <FaLaptopCode className="text-sm" />
+          Hide preview
+        </button>
+        {html === defaultHTML && (
+          <a
+            href="https://huggingface.co/spaces/victor/deepsite-gallery"
+            target="_blank"
+            className="bg-gray-200 text-gray-950 text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-200 hover:bg-gray-300 transition-all duration-100 cursor-pointer"
           >
-            <FaLaptopCode className="text-sm" />
-            Hide preview
-          </button>
-          {html === defaultHTML && (
-            <a
-              href="https://huggingface.co/spaces/victor/deepsite-gallery"
-              target="_blank"
-              className="bg-gray-200 text-gray-950 text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-200 hover:bg-gray-300 transition-all duration-100 cursor-pointer"
-            >
-              🖼️ <span>DeepSite Gallery</span>
-            </a>
-          )}
+            🖼️ <span>DeepSite Gallery</span>
+          </a>
+        )}
+        {!isAiWorking && (
           <button
             className="bg-white lg:bg-gray-950 shadow-md text-gray-950 lg:text-white text-xs lg:text-sm font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-100 lg:border-gray-900 hover:brightness-150 transition-all duration-100 cursor-pointer"
             onClick={handleRefreshIframe}
@@ -76,8 +76,8 @@ function Preview({
             <TbReload className="text-sm" />
             Refresh Preview
           </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
