@@ -18,6 +18,7 @@ import Tabs from "./tabs/tabs";
 import AskAI from "./ask-ai/ask-ai";
 import { Auth } from "./../../utils/types";
 import Preview from "./preview/preview";
+import LoadButton from "./load-button/load-button";
 
 function App() {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("html_content");
@@ -182,7 +183,10 @@ function App() {
           }
         }}
       >
-        <DeployButton html={html} error={error} auth={auth} />
+        <div className="flex items-center justify-end gap-5">
+          <LoadButton auth={auth} setHtml={setHtml} />
+          <DeployButton html={html} error={error} auth={auth} />
+        </div>
       </Header>
       <main className="max-lg:flex-col flex w-full">
         <div

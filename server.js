@@ -352,33 +352,42 @@ app.get("/api/remix/:username/:repo", async (req, res) => {
   const token = hf_token || process.env.DEFAULT_HF_TOKEN;
 
   const repoId = `${username}/${repo}`;
-  const space = await spaceInfo({
-    name: repoId,
-  });
-
-  if (!space || space.sdk !== "static" || space.private) {
-    return res.status(404).send({
-      ok: false,
-      message: "Space not found",
-    });
-  }
 
   const url = `https://huggingface.co/spaces/${repoId}/raw/main/index.html`;
-  const response = await fetch(url);
-  if (!response.ok) {
-    return res.status(404).send({
+  try {
+    const space = await spaceInfo({
+      name: repoId,
+      accessToken: token,
+    });
+
+    if (!space || space.sdk !== "static" || space.private) {
+      return res.status(404).send({
+        ok: false,
+        message: "Space not found",
+      });
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      return res.status(404).send({
+        ok: false,
+        message: "Space not found",
+      });
+    }
+    let html = await response.text();
+    // remove the last p tag including this url https://enzostvs-deepsite.hf.space
+    html = html.replace(getPTag(repoId), "");
+
+    res.status(200).send({
+      ok: true,
+      html,
+    });
+  } catch (error) {
+    return res.status(500).send({
       ok: false,
-      message: "Space not found",
+      message: error.message,
     });
   }
-  let html = await response.text();
-  // remove the last p tag including this url https://enzostvs-deepsite.hf.space
-  html = html.replace(getPTag(repoId), "");
-
-  res.status(200).send({
-    ok: true,
-    html,
-  });
 });
 
 app.get("*", (_req, res) => {
