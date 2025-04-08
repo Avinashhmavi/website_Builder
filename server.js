@@ -120,7 +120,7 @@ app.get("/api/@me", checkUser, async (req, res) => {
 
 app.post("/api/deploy", checkUser, async (req, res) => {
   const { html, title, path } = req.body;
-  if (!html || !title) {
+  if (!html || (!path && !title)) {
     return res.status(400).send({
       ok: false,
       message: "Missing required fields",
@@ -358,6 +358,7 @@ app.get("/api/remix/:username/:repo", async (req, res) => {
     const space = await spaceInfo({
       name: repoId,
       accessToken: token,
+      additionalFields: ["author"],
     });
 
     if (!space || space.sdk !== "static" || space.private) {
@@ -378,9 +379,28 @@ app.get("/api/remix/:username/:repo", async (req, res) => {
     // remove the last p tag including this url https://enzostvs-deepsite.hf.space
     html = html.replace(getPTag(repoId), "");
 
+    let user = null;
+
+    if (token) {
+      const request_user = await fetch(
+        "https://huggingface.co/oauth/userinfo",
+        {
+          headers: {
+            Authorization: `Bearer ${hf_token}`,
+          },
+        }
+      )
+        .then((res) => res.json())
+        .catch(() => null);
+
+      user = request_user;
+    }
+
     res.status(200).send({
       ok: true,
       html,
+      isOwner: space.author === user?.preferred_username,
+      path: repoId,
     });
   } catch (error) {
     return res.status(500).send({

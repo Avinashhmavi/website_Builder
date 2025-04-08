@@ -9,24 +9,31 @@ import { Auth } from "../../../utils/types";
 function LoadButton({
   auth,
   setHtml,
+  setPath,
 }: {
   auth?: Auth;
   setHtml: (html: string) => void;
+  setPath: (path?: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [path, setPath] = useState<string | undefined>(undefined);
+  const [url, setUrl] = useState<string | undefined>(undefined);
 
   const loadSpace = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/remix/${path}`);
+      const res = await fetch(`/api/remix/${url}`);
       const data = await res.json();
       if (res.ok) {
         if (data.html) {
           setHtml(data.html);
           toast.success("Project loaded successfully.");
+        }
+        if (data.isOwner) {
+          setPath(data.path);
+        } else {
+          setPath(undefined);
         }
         setOpen(false);
       } else {
@@ -85,14 +92,14 @@ function LoadButton({
               </p>
               <input
                 type="text"
-                value={path}
+                value={url}
                 className="mr-2 border rounded-md px-3 py-1.5 border-gray-300 w-full text-sm"
                 placeholder="https://huggingface.co/spaces/username/space-name"
-                onChange={(e) => setPath(e.target.value)}
+                onChange={(e) => setUrl(e.target.value)}
                 onFocus={() => setError(false)}
                 onBlur={(e) => {
                   const pathParts = e.target.value.split("/");
-                  setPath(
+                  setUrl(
                     `${pathParts[pathParts.length - 2]}/${
                       pathParts[pathParts.length - 1]
                     }`
@@ -108,7 +115,7 @@ function LoadButton({
             )}
             <div className="pt-2 text-right">
               <button
-                disabled={error || loading || !path}
+                disabled={error || loading || !url}
                 className="relative rounded-full bg-black px-5 py-2 text-white font-semibold text-xs hover:bg-black/90 transition-all duration-100 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
                 onClick={loadSpace}
               >
