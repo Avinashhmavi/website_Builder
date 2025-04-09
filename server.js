@@ -42,10 +42,16 @@ const getPTag = (repoId) => {
 };
 
 app.get("/api/login", (_req, res) => {
-  res.redirect(
-    302,
-    `https://huggingface.co/oauth/authorize?client_id=${process.env.OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20write-repos%20manage-repos%20inference-api&prompt=consent&state=1234567890`
-  );
+  // res.redirect(
+  //   302,
+  //   `https://huggingface.co/oauth/authorize?client_id=${process.env.OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20write-repos%20manage-repos%20inference-api&prompt=consent&state=1234567890`
+  // );
+  // redirect in new tab
+  const redirectUrl = `https://huggingface.co/oauth/authorize?client_id=${process.env.OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20write-repos%20manage-repos%20inference-api&prompt=consent&state=1234567890`;
+  res.status(200).send({
+    ok: true,
+    redirectUrl,
+  });
 });
 app.get("/auth/login", async (req, res) => {
   const { code } = req.query;

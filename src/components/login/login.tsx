@@ -10,9 +10,14 @@ function Login({
 }) {
   const [, setStorage] = useLocalStorage("html_content");
 
-  const handleClick = () => {
+  const handleClick = async () => {
     if (html !== defaultHTML) {
       setStorage(html);
+    }
+    const request = await fetch("/api/login");
+    const res = await request.json();
+    if (res?.redirectUrl) {
+      window.open(res.redirectUrl, "_blank");
     }
   };
 
@@ -26,13 +31,13 @@ function Login({
       </header>
       <main className="px-4 py-4 space-y-3">
         {children}
-        <a href="/api/login" onClick={handleClick}>
+        <button onClick={handleClick}>
           <img
             src="https://huggingface.co/datasets/huggingface/badges/resolve/main/sign-in-with-huggingface-lg-dark.svg"
             alt="Sign in with Hugging Face"
             className="mx-auto"
           />
-        </a>
+        </button>
       </main>
     </>
   );
