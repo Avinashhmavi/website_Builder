@@ -28,7 +28,7 @@ function LoadButton({
       if (res.ok) {
         if (data.html) {
           setHtml(data.html);
-          toast.success("Project loaded successfully.");
+          toast.success("Space loaded successfully.");
         }
         if (data.isOwner) {
           setPath(data.path);
@@ -58,7 +58,7 @@ function LoadButton({
         className="underline hover:text-white cursor-pointer text-xs lg:text-sm text-gray-300"
         onClick={() => setOpen(!open)}
       >
-        Load project
+        Load Space
       </p>
       <div
         className={classNames(
@@ -86,6 +86,9 @@ function LoadButton({
             Load Project
           </header>
           <main className="px-4 pt-3 pb-4 space-y-3">
+            <p className="text-sm text-pink-600 bg-pink-100 rounded-md px-3 py-2">
+              Load an existing DeepSite Space to continue working on it.
+            </p>
             <label className="block">
               <p className="text-gray-600 text-sm font-medium mb-1.5">
                 Space URL
@@ -119,7 +122,7 @@ function LoadButton({
                 className="relative rounded-full bg-black px-5 py-2 text-white font-semibold text-xs hover:bg-black/90 transition-all duration-100 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
                 onClick={loadSpace}
               >
-                Load Project
+                Load Space
                 {loading && <Loading />}
               </button>
             </div>
