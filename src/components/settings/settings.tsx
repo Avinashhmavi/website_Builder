@@ -55,7 +55,8 @@ function Settings({
           {/* toggle using tailwind css */}
           <div>
             <a
-              href="/"
+              href="https://huggingface.co/spaces/enzostvs/deepsite/discussions/74"
+              target="_blank"
               className="w-full flex items-center justify-between text-gray-600 bg-gray-50 border border-gray-100 px-2 py-2 rounded-lg mb-3 text-sm font-medium hover:brightness-95"
             >
               How to use it locally?
