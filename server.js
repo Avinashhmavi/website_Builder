@@ -42,11 +42,6 @@ const getPTag = (repoId) => {
 };
 
 app.get("/api/login", (_req, res) => {
-  // res.redirect(
-  //   302,
-  //   `https://huggingface.co/oauth/authorize?client_id=${process.env.OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20write-repos%20manage-repos%20inference-api&prompt=consent&state=1234567890`
-  // );
-  // redirect in new tab
   const redirectUrl = `https://huggingface.co/oauth/authorize?client_id=${process.env.OAUTH_CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=openid%20profile%20write-repos%20manage-repos%20inference-api&prompt=consent&state=1234567890`;
   res.status(200).send({
     ok: true,
@@ -101,7 +96,15 @@ app.get("/auth/logout", (req, res) => {
 });
 
 app.get("/api/@me", checkUser, async (req, res) => {
-  const { hf_token } = req.cookies;
+  let { hf_token } = req.cookies;
+
+  if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
+    return res.send({
+      preferred_username: "local-use",
+      isLocalUse: true,
+    });
+  }
+
   try {
     const request_user = await fetch("https://huggingface.co/oauth/userinfo", {
       headers: {
@@ -133,7 +136,11 @@ app.post("/api/deploy", checkUser, async (req, res) => {
     });
   }
 
-  const { hf_token } = req.cookies;
+  let { hf_token } = req.cookies;
+  if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
+    hf_token = process.env.HF_TOKEN;
+  }
+
   try {
     const repo = {
       type: "space",
@@ -211,6 +218,11 @@ app.post("/api/ask-ai", async (req, res) => {
 
   const { hf_token } = req.cookies;
   let token = hf_token;
+
+  if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
+    hf_token = process.env.HF_TOKEN;
+  }
+
   const ip =
     req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
     req.headers["x-real-ip"] ||
@@ -244,12 +256,6 @@ app.post("/api/ask-ai", async (req, res) => {
   if (html) TOKENS_USED += html.length;
 
   const DEFAULT_PROVIDER = PROVIDERS.novita;
-  // const selectedProvider =
-  //   provider === "auto"
-  //     ? TOKENS_USED < PROVIDERS.sambanova.max_tokens
-  //       ? PROVIDERS.sambanova
-  //       : DEFAULT_PROVIDER
-  //     : PROVIDERS[provider] ?? DEFAULT_PROVIDER;
   const selectedProvider =
     provider === "auto"
       ? DEFAULT_PROVIDER
@@ -355,7 +361,11 @@ app.get("/api/remix/:username/:repo", async (req, res) => {
   const { username, repo } = req.params;
   const { hf_token } = req.cookies;
 
-  const token = hf_token || process.env.DEFAULT_HF_TOKEN;
+  let token = hf_token || process.env.DEFAULT_HF_TOKEN;
+
+  if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
+    token = process.env.HF_TOKEN;
+  }
 
   const repoId = `${username}/${repo}`;
 
