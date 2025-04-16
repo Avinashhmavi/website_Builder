@@ -29,11 +29,13 @@ function DeployButton({
   error = false,
   auth,
   setHtml,
+  prompts,
 }: {
   html: string;
   error: boolean;
   auth?: Auth;
   setHtml: (html: string) => void;
+  prompts: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,6 +55,7 @@ function DeployButton({
           title: config.title,
           path,
           html,
+          prompts,
         }),
         headers: {
           "Content-Type": "application/json",

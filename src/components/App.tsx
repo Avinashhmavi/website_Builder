@@ -36,6 +36,7 @@ function App() {
   const [currentView, setCurrentView] = useState<"editor" | "preview">(
     "editor"
   );
+  const [prompts, setPrompts] = useState<string[]>([]);
 
   const fetchMe = async () => {
     const res = await fetch("/api/@me");
@@ -182,7 +183,13 @@ function App() {
           }
         }}
       >
-        <DeployButton html={html} error={error} auth={auth} setHtml={setHtml} />
+        <DeployButton
+          html={html}
+          error={error}
+          auth={auth}
+          setHtml={setHtml}
+          prompts={prompts}
+        />
       </Header>
       <main className="max-lg:flex-col flex w-full">
         <div
@@ -233,6 +240,9 @@ function App() {
             isAiWorking={isAiWorking}
             setisAiWorking={setisAiWorking}
             setView={setCurrentView}
+            onNewPrompt={(prompt) => {
+              setPrompts((prev) => [...prev, prompt]);
+            }}
             onScrollToBottom={() => {
               editorRef.current?.revealLine(
                 editorRef.current?.getModel()?.getLineCount() ?? 0

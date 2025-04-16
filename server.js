@@ -128,7 +128,7 @@ app.get("/api/@me", checkUser, async (req, res) => {
 });
 
 app.post("/api/deploy", checkUser, async (req, res) => {
-  const { html, title, path } = req.body;
+  const { html, title, path, prompts } = req.body;
   if (!html || (!path && !title)) {
     return res.status(400).send({
       ok: false,
@@ -187,7 +187,12 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
     const file = new Blob([newHtml], { type: "text/html" });
     file.name = "index.html"; // Add name property to the Blob
 
-    const files = [file];
+    // create prompt.txt file with all the prompts used, split by new line
+    const newPrompts = ``.concat(prompts.map((prompt) => prompt).join("\n"));
+    const promptFile = new Blob([newPrompts], { type: "text/plain" });
+    promptFile.name = "prompts.txt"; // Add name property to the Blob
+
+    const files = [file, promptFile];
     if (readme) {
       const readmeFile = new Blob([readme], { type: "text/markdown" });
       readmeFile.name = "README.md"; // Add name property to the Blob
@@ -216,7 +221,7 @@ app.post("/api/ask-ai", async (req, res) => {
     });
   }
 
-  const { hf_token } = req.cookies;
+  let { hf_token } = req.cookies;
   let token = hf_token;
 
   if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {

@@ -21,11 +21,13 @@ function AskAI({
   isAiWorking,
   setisAiWorking,
   setView,
+  onNewPrompt,
 }: {
   html: string;
   setHtml: (html: string) => void;
   onScrollToBottom: () => void;
   isAiWorking: boolean;
+  onNewPrompt: (prompt: string) => void;
   setView: React.Dispatch<React.SetStateAction<"editor" | "preview">>;
   setisAiWorking: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
@@ -49,6 +51,7 @@ function AskAI({
     let contentResponse = "";
     let lastRenderTime = 0;
     try {
+      onNewPrompt(prompt);
       const request = await fetch("/api/ask-ai", {
         method: "POST",
         body: JSON.stringify({
