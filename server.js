@@ -225,7 +225,7 @@ app.post("/api/ask-ai", async (req, res) => {
   let token = hf_token;
 
   if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
-    hf_token = process.env.HF_TOKEN;
+    token = process.env.HF_TOKEN;
   }
 
   const ip =
