@@ -235,7 +235,7 @@ app.post("/api/ask-ai", async (req, res) => {
     req.ip ||
     "0.0.0.0";
 
-  if (!hf_token) {
+  if (!token) {
     ipAddresses.set(ip, (ipAddresses.get(ip) || 0) + 1);
     if (ipAddresses.get(ip) > MAX_REQUESTS_PER_IP) {
       return res.status(429).send({
