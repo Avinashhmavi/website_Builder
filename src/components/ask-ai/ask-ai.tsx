@@ -40,7 +40,8 @@ function AskAI({
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
-  const [state, copyToClipboard] = useCopyToClipboard();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, copyToClipboard] = useCopyToClipboard();
 
   const audio = new Audio(SuccessSound);
   audio.volume = 0.5;
