@@ -4,8 +4,9 @@ import { RiSparkling2Fill } from "react-icons/ri";
 import { GrSend } from "react-icons/gr";
 import classNames from "classnames";
 import { toast } from "react-toastify";
-import { useLocalStorage } from "react-use";
+import { useCopyToClipboard, useLocalStorage } from "react-use";
 import { MdPreview } from "react-icons/md";
+import { IoCopy } from "react-icons/io5";
 
 import Login from "../login/login";
 import { defaultHTML } from "./../../../utils/consts";
@@ -39,6 +40,7 @@ function AskAI({
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
+  const [state, copyToClipboard] = useCopyToClipboard();
 
   const audio = new Audio(SuccessSound);
   audio.volume = 0.5;
@@ -148,6 +150,18 @@ function AskAI({
         isAiWorking ? "animate-pulse" : ""
       }`}
     >
+      {defaultHTML !== html && (
+        <p
+          className="text-2xl text-white/50 hover:text-white/80 -translate-y-[calc(100%+8px)] absolute top-0 right-0 cursor-pointer"
+          onClick={() => {
+            copyToClipboard(html);
+            toast.success("HTML copied to clipboard");
+            audio.play();
+          }}
+        >
+          <IoCopy />
+        </p>
+      )}
       {defaultHTML !== html && (
         <button
           className="bg-white lg:hidden -translate-y-[calc(100%+8px)] absolute left-0 top-0 shadow-md text-gray-950 text-xs font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-100 hover:brightness-150 transition-all duration-100 cursor-pointer"
