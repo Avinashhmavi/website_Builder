@@ -37,6 +37,9 @@ function App() {
     "editor"
   );
   const [prompts, setPrompts] = useState<string[]>([]);
+  const [htmlHistory, setHtmlHistory] = useState<
+    { html: string; createdAt: Date; prompt: string }[]
+  >([]);
 
   const fetchMe = async () => {
     const res = await fetch("/api/@me");
@@ -201,7 +204,7 @@ function App() {
             }
           )}
         >
-          <Tabs />
+          <Tabs htmlHistory={htmlHistory} setHtml={setHtml} />
           <div
             onClick={(e) => {
               if (isAiWorking) {
@@ -236,7 +239,18 @@ function App() {
           </div>
           <AskAI
             html={html}
-            setHtml={setHtml}
+            setHtml={(newHtml: string) => {
+              setHtml(newHtml);
+            }}
+            onSuccess={(finalHtml: string, p: string) => {
+              const currentHistory = [...htmlHistory];
+              currentHistory.unshift({
+                html: finalHtml,
+                createdAt: new Date(),
+                prompt: p,
+              });
+              setHtmlHistory(currentHistory);
+            }}
             isAiWorking={isAiWorking}
             setisAiWorking={setisAiWorking}
             setView={setCurrentView}

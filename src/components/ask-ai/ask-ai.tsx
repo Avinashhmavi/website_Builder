@@ -23,6 +23,7 @@ function AskAI({
   setisAiWorking,
   setView,
   onNewPrompt,
+  onSuccess,
 }: {
   html: string;
   setHtml: (html: string) => void;
@@ -31,6 +32,7 @@ function AskAI({
   onNewPrompt: (prompt: string) => void;
   setView: React.Dispatch<React.SetStateAction<"editor" | "preview">>;
   setisAiWorking: React.Dispatch<React.SetStateAction<boolean>>;
+  onSuccess: (h: string, p: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -90,8 +92,8 @@ function AskAI({
           const { done, value } = await reader.read();
           if (done) {
             toast.success("AI responded successfully");
-            setPrompt("");
             setPreviousPrompt(prompt);
+            setPrompt("");
             setisAiWorking(false);
             setHasAsked(true);
             audio.play();
@@ -104,6 +106,7 @@ function AskAI({
             if (finalDoc) {
               setHtml(finalDoc);
             }
+            onSuccess(finalDoc ?? contentResponse, prompt);
 
             return;
           }
@@ -153,11 +156,10 @@ function AskAI({
     >
       {defaultHTML !== html && (
         <p
-          className="text-2xl text-white/50 hover:text-white/80 -translate-y-[calc(100%+8px)] absolute top-0 right-0 cursor-pointer"
+          className="text-xl text-white/50 hover:text-white/80 -translate-y-[calc(100%+8px)] absolute top-0 right-0 cursor-pointer"
           onClick={() => {
             copyToClipboard(html);
             toast.success("HTML copied to clipboard");
-            audio.play();
           }}
         >
           <IoCopy />
