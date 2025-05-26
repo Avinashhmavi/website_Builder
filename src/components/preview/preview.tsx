@@ -58,7 +58,7 @@ function Preview({
           "w-full select-none transition-all duration-200",
           {
             "pointer-events-none": isResizing || isAiWorking,
-            "max-w-md mx-auto h-[80dvh] rounded-[86px] border-[8px] border-black shadow-2xl":
+            "max-w-md mx-auto h-[80dvh] rounded-[64px] border-[8px] border-black shadow-2xl":
               device === "mobile",
             "h-full": device === "desktop",
           }
