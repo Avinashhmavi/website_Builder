@@ -13,6 +13,7 @@ export const defaultHTML = `<!DOCTYPE html>
         height: 100dvh;
         font-family: "Arial", sans-serif;
         text-align: center;
+        background-color: #fff;
       }
       .arrow {
         position: absolute;
