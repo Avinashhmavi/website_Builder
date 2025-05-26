@@ -38,7 +38,7 @@ function Preview({
     <div
       ref={ref}
       className={classNames(
-        "w-full border-l border-gray-900 bg-gray-950 h-[calc(100dvh-49px)] lg:h-[calc(100dvh-53px)] relative transition-all duration-200",
+        "w-full border-l border-gray-900 bg-white h-[calc(100dvh-49px)] lg:h-[calc(100dvh-53px)] relative transition-all duration-200",
         {
           "flex items-center justify-center": device === "mobile",
         }
@@ -58,7 +58,7 @@ function Preview({
           "w-full select-none transition-all duration-200",
           {
             "pointer-events-none": isResizing || isAiWorking,
-            "max-w-md mx-auto h-[80dvh] rounded-[86px] border-[8px] border-black":
+            "max-w-md mx-auto h-[80dvh] rounded-[86px] border-[8px] border-black shadow-2xl":
               device === "mobile",
             "h-full": device === "desktop",
           }
