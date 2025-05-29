@@ -47,7 +47,7 @@ function Settings({
   }, [model]);
 
   useUpdateEffect(() => {
-    if (!modelAvailableProviders.includes(provider)) {
+    if (provider !== "auto" && !modelAvailableProviders.includes(provider)) {
       onChange("auto");
     }
   }, [model, provider]);
@@ -138,14 +138,14 @@ function Settings({
                     }
                   )}
                   onClick={() => {
-                    const model = MODELS.find(
+                    const foundModel = MODELS.find(
                       (m: { value: string }) => m.value === model
                     );
-                    onChange(
-                      provider === "auto"
-                        ? model?.autoProvider ?? "novita"
-                        : "auto"
-                    );
+                    if (provider === "auto") {
+                      onChange(foundModel.providers[0]);
+                    } else {
+                      onChange("auto");
+                    }
                   }}
                 >
                   <div

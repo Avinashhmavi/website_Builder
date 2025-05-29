@@ -286,7 +286,7 @@ app.post("/api/ask-ai", async (req, res) => {
   const DEFAULT_PROVIDER = PROVIDERS.novita;
   const selectedProvider =
     provider === "auto"
-      ? DEFAULT_PROVIDER
+      ? selectedModel.autoProvider
       : PROVIDERS[provider] ?? DEFAULT_PROVIDER;
 
   if (provider !== "auto" && TOKENS_USED >= selectedProvider.max_tokens) {
