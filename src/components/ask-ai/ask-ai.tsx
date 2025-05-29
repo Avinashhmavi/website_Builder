@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { RiSparkling2Fill } from "react-icons/ri";
 import { GrSend } from "react-icons/gr";
 import classNames from "classnames";
-import { toast } from "react-toastify";
-import { useCopyToClipboard, useLocalStorage } from "react-use";
-import { MdPreview } from "react-icons/md";
-import { IoCopy } from "react-icons/io5";
+import { toast } from "sonner";
+import { useLocalStorage, useUpdateEffect } from "react-use";
 
 import Login from "../login/login";
-import { defaultHTML } from "./../../../utils/consts";
+import { defaultHTML } from "../../../utils/consts";
 import SuccessSound from "./../../assets/success.mp3";
 import Settings from "../settings/settings";
 import ProModal from "../pro-modal/pro-modal";
-// import SpeechPrompt from "../speech-prompt/speech-prompt";
+import { Button } from "../ui/button";
+// @ts-expect-error not needed
+import { MODELS } from "./../../../utils/providers";
+import { X } from "lucide-react";
 
 function AskAI({
   html,
@@ -21,7 +22,6 @@ function AskAI({
   onScrollToBottom,
   isAiWorking,
   setisAiWorking,
-  setView,
   onNewPrompt,
   onSuccess,
 }: {
@@ -30,20 +30,23 @@ function AskAI({
   onScrollToBottom: () => void;
   isAiWorking: boolean;
   onNewPrompt: (prompt: string) => void;
-  setView: React.Dispatch<React.SetStateAction<"editor" | "preview">>;
   setisAiWorking: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess: (h: string, p: string) => void;
 }) {
+  const refThink = useRef<HTMLDivElement | null>(null);
+
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [hasAsked, setHasAsked] = useState(false);
   const [previousPrompt, setPreviousPrompt] = useState("");
   const [provider, setProvider] = useLocalStorage("provider", "auto");
+  const [model, setModel] = useLocalStorage("model", MODELS[0].value);
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
   const [openProModal, setOpenProModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_, copyToClipboard] = useCopyToClipboard();
+  const [think, setThink] = useState<string | undefined>(undefined);
+  const [openThink, setOpenThink] = useState(false);
+  const [isThinking, setIsThinking] = useState(true);
 
   const audio = new Audio(SuccessSound);
   audio.volume = 0.5;
@@ -62,6 +65,7 @@ function AskAI({
         body: JSON.stringify({
           prompt,
           provider,
+          model,
           ...(html === defaultHTML ? {} : { html }),
           ...(previousPrompt ? { previousPrompt } : {}),
         }),
@@ -87,7 +91,9 @@ function AskAI({
         }
         const reader = request.body.getReader();
         const decoder = new TextDecoder("utf-8");
-
+        const selectedModel = MODELS.find(
+          (m: { value: string }) => m.value === model
+        );
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
@@ -97,7 +103,6 @@ function AskAI({
             setisAiWorking(false);
             setHasAsked(true);
             audio.play();
-            setView("preview");
 
             // Now we have the complete HTML including </html>, so set it to be sure
             const finalDoc = contentResponse.match(
@@ -113,9 +118,19 @@ function AskAI({
 
           const chunk = decoder.decode(value, { stream: true });
           contentResponse += chunk;
+          if (selectedModel?.isThinker) {
+            const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
+            if (thinkMatch && !contentResponse?.includes("</think>")) {
+              if (!openThink && (think?.length ?? 0) < 3) {
+                setOpenThink(true);
+              }
+              setThink(thinkMatch.replace("<think>", "").trim());
+            }
+          }
+
           const newHtml = contentResponse.match(/<!DOCTYPE html>[\s\S]*/)?.[0];
           if (newHtml) {
-            // Force-close the HTML tag so the iframe doesn't render half-finished markup
+            setIsThinking(false);
             let partialDoc = newHtml;
             if (!partialDoc.includes("</html>")) {
               partialDoc += "\n</html>";
@@ -137,8 +152,6 @@ function AskAI({
 
         read();
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setisAiWorking(false);
       toast.error(error.message);
@@ -148,38 +161,59 @@ function AskAI({
     }
   };
 
+  useUpdateEffect(() => {
+    if (refThink.current) {
+      refThink.current.scrollTop = refThink.current.scrollHeight;
+    }
+  }, [think]);
+
   return (
-    <div
-      className={`bg-gray-950 rounded-xl py-2 lg:py-2.5 pl-3.5 lg:pl-4 pr-2 lg:pr-2.5 absolute lg:sticky bottom-3 left-3 lg:bottom-4 lg:left-4 w-[calc(100%-1.5rem)] lg:w-[calc(100%-2rem)] z-10 group ${
-        isAiWorking ? "animate-pulse" : ""
-      }`}
-    >
-      {defaultHTML !== html && (
-        <p
-          className="text-xl text-white/50 hover:text-white/80 -translate-y-[calc(100%+8px)] absolute top-0 right-0 cursor-pointer"
-          onClick={() => {
-            copyToClipboard(html);
-            toast.success("HTML copied to clipboard");
-          }}
+    <div className="bg-neutral-800 border border-neutral-700 rounded-lg ring-[5px] focus-within:ring-sky-500/50 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
+      {think && (
+        <div
+          ref={refThink}
+          className="w-full px-5 pt-4 border-b border-neutral-700 max-h-[300px] overflow-y-auto relative"
         >
-          <IoCopy />
-        </p>
+          <div className="sticky top-0 z-1 flex items-center justify-end">
+            <Button
+              size="xs"
+              onClick={() => {
+                setThink("");
+                setOpenThink(false);
+              }}
+            >
+              <X />
+              Close
+            </Button>
+          </div>
+          <div className="-translate-y-5">
+            <p className="text-xs text-neutral-400">AI is thinking...</p>
+            <p className="text-[13px] text-neutral-300 mt-1 whitespace-pre-line">
+              {think}
+            </p>
+          </div>
+        </div>
       )}
-      {defaultHTML !== html && (
-        <button
-          className="bg-white lg:hidden -translate-y-[calc(100%+8px)] absolute left-0 top-0 shadow-md text-gray-950 text-xs font-medium py-2 px-3 lg:px-4 rounded-lg flex items-center gap-2 border border-gray-100 hover:brightness-150 transition-all duration-100 cursor-pointer"
-          onClick={() => setView("preview")}
-        >
-          <MdPreview className="text-sm" />
-          View Preview
-        </button>
-      )}
-      <div className="w-full relative flex items-center justify-between">
-        <RiSparkling2Fill className="text-lg lg:text-xl text-gray-500 group-focus-within:text-pink-500" />
+      <div
+        className={classNames(
+          "w-full relative flex items-center justify-between pl-3.5 p-2 lg:p-2 lg:pl-4",
+          {
+            "animate-pulse": isAiWorking,
+          }
+        )}
+      >
+        {isAiWorking && (
+          <div className="absolute bg-neutral-800 rounded-lg bottom-0 left-10 w-[calc(100%-92px)] h-full z-1 flex items-center justify-start max-lg:text-sm">
+            <p className="text-neutral-400 font-code">
+              AI is {isThinking ? "thinking" : "coding"}...
+            </p>
+          </div>
+        )}
+        <RiSparkling2Fill className="size-5 text-neutral-400 group-focus-within:text-sky-500" />
         <input
           type="text"
           disabled={isAiWorking}
-          className="w-full bg-transparent max-lg:text-sm outline-none px-3 text-white placeholder:text-gray-500 font-code"
+          className="w-full bg-transparent max-lg:text-sm outline-none px-3 text-white placeholder:text-neutral-400 font-code"
           placeholder={
             hasAsked ? "What do you want to ask AI next?" : "Ask AI anything..."
           }
@@ -195,18 +229,21 @@ function AskAI({
           {/* <SpeechPrompt setPrompt={setPrompt} /> */}
           <Settings
             provider={provider as string}
+            model={model as string}
             onChange={setProvider}
+            onModelChange={setModel}
             open={openProvider}
             error={providerError}
             onClose={setOpenProvider}
           />
-          <button
-            disabled={isAiWorking}
-            className="relative overflow-hidden cursor-pointer flex-none flex items-center justify-center rounded-full text-sm font-semibold size-8 text-center bg-pink-500 hover:bg-pink-400 text-white shadow-sm dark:shadow-highlight/20 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:hover:bg-gray-300"
+          <Button
+            variant="pink"
+            size="icon"
+            disabled={isAiWorking || !prompt.trim()}
             onClick={callAi}
           >
             <GrSend className="-translate-x-[1px]" />
-          </button>
+          </Button>
         </div>
       </div>
       <div

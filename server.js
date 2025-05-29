@@ -14,7 +14,7 @@ import { InferenceClient } from "@huggingface/inference";
 import bodyParser from "body-parser";
 
 import checkUser from "./middlewares/checkUser.js";
-import { PROVIDERS } from "./utils/providers.js";
+import { MODELS, PROVIDERS } from "./utils/providers.js";
 import { COLORS } from "./utils/colors.js";
 
 // Load environment variables from .env file
@@ -30,7 +30,6 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.APP_PORT || 3000;
 const REDIRECT_URI =
   process.env.REDIRECT_URI || `http://localhost:${PORT}/auth/login`;
-const MODEL_ID = "deepseek-ai/DeepSeek-V3-0324";
 const MAX_REQUESTS_PER_IP = 2;
 
 app.use(cookieParser());
@@ -213,11 +212,35 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 });
 
 app.post("/api/ask-ai", async (req, res) => {
-  const { prompt, html, previousPrompt, provider } = req.body;
+  const { prompt, html, previousPrompt, provider, model } = req.body;
   if (!prompt) {
     return res.status(400).send({
       ok: false,
       message: "Missing required fields",
+    });
+  }
+
+  if (!model) {
+    return res.status(400).send({
+      ok: false,
+      message: "Missing model field",
+    });
+  }
+
+  const selectedModel = MODELS.find(
+    (m) => m.value === model || m.label === model
+  );
+  if (!selectedModel) {
+    return res.status(400).send({
+      ok: false,
+      message: "Invalid model selected",
+    });
+  }
+  if (!selectedModel.providers.includes(provider) && provider !== "auto") {
+    return res.status(400).send({
+      ok: false,
+      openSelectProvider: true,
+      message: `The selected model does not support the ${provider} provider.`,
     });
   }
 
@@ -276,7 +299,7 @@ app.post("/api/ask-ai", async (req, res) => {
 
   try {
     const chatCompletion = client.chatCompletionStream({
-      model: MODEL_ID,
+      model: selectedModel.value,
       provider: selectedProvider.id,
       messages: [
         {
@@ -318,15 +341,8 @@ app.post("/api/ask-ai", async (req, res) => {
       }
       const chunk = value.choices[0]?.delta?.content;
       if (chunk) {
-        if (provider !== "sambanova") {
-          res.write(chunk);
-          completeResponse += chunk;
-
-          if (completeResponse.includes("</html>")) {
-            break;
-          }
-        } else {
-          let newChunk = chunk;
+        let newChunk = chunk;
+        if (!selectedModel?.isThinker) {
           if (chunk.includes("</html>")) {
             // Replace everything after the last </html> tag with an empty string
             newChunk = newChunk.replace(/<\/html>[\s\S]*/, "</html>");
@@ -335,6 +351,19 @@ app.post("/api/ask-ai", async (req, res) => {
           res.write(newChunk);
           if (newChunk.includes("</html>")) {
             break;
+          }
+        } else {
+          // check if in the completeResponse there is already a </html> tag but after the last </think> tag, if yes break the loop
+          const lastThinkTagIndex = completeResponse.lastIndexOf("</think>");
+          completeResponse += newChunk;
+          res.write(newChunk);
+          if (lastThinkTagIndex !== -1) {
+            const afterLastThinkTag = completeResponse.slice(
+              lastThinkTagIndex + "</think>".length
+            );
+            if (afterLastThinkTag.includes("</html>")) {
+              break;
+            }
           }
         }
       }
