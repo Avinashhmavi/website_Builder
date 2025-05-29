@@ -25,7 +25,7 @@ function Preview({
     <div
       ref={ref}
       className={classNames(
-        "w-full border-l border-gray-900 h-full relative transition-all duration-200 z-0 flex items-center justify-center",
+        "w-full border-l border-gray-900 h-full relative z-0 flex items-center justify-center",
         {
           "lg:p-4": currentTab !== "preview",
         }
