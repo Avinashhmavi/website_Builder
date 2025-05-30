@@ -289,8 +289,6 @@ app.post("/api/ask-ai", async (req, res) => {
       ? PROVIDERS[selectedModel.autoProvider]
       : PROVIDERS[provider] ?? DEFAULT_PROVIDER;
 
-  console.log(provider, selectedProvider);
-
   if (provider !== "auto" && TOKENS_USED >= selectedProvider.max_tokens) {
     return res.status(400).send({
       ok: false,

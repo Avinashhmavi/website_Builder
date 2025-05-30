@@ -5,6 +5,7 @@ import { GrSend } from "react-icons/gr";
 import classNames from "classnames";
 import { toast } from "sonner";
 import { useLocalStorage, useUpdateEffect } from "react-use";
+import { ChevronDown } from "lucide-react";
 
 import Login from "../login/login";
 import { defaultHTML } from "../../../utils/consts";
@@ -14,7 +15,6 @@ import ProModal from "../pro-modal/pro-modal";
 import { Button } from "../ui/button";
 // @ts-expect-error not needed
 import { MODELS } from "./../../../utils/providers";
-import { X } from "lucide-react";
 
 function AskAI({
   html,
@@ -55,6 +55,9 @@ function AskAI({
     if (isAiWorking || !prompt.trim()) return;
     setisAiWorking(true);
     setProviderError("");
+    setThink("");
+    setOpenThink(false);
+    setIsThinking(true);
 
     let contentResponse = "";
     let lastRenderTime = 0;
@@ -94,6 +97,7 @@ function AskAI({
         const selectedModel = MODELS.find(
           (m: { value: string }) => m.value === model
         );
+        let contentThink: string | undefined = undefined;
         const read = async () => {
           const { done, value } = await reader.read();
           if (done) {
@@ -121,10 +125,11 @@ function AskAI({
           if (selectedModel?.isThinker) {
             const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
             if (thinkMatch && !contentResponse?.includes("</think>")) {
-              if (!openThink && (think?.length ?? 0) < 3) {
+              if ((contentThink?.length ?? 0) < 3) {
                 setOpenThink(true);
               }
               setThink(thinkMatch.replace("<think>", "").trim());
+              contentThink += chunk;
             }
           }
 
@@ -167,31 +172,51 @@ function AskAI({
     }
   }, [think]);
 
+  useUpdateEffect(() => {
+    if (!isThinking) {
+      setOpenThink(false);
+    }
+  }, [isThinking]);
+
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-lg ring-[5px] focus-within:ring-sky-500/50 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
       {think && (
         <div
           ref={refThink}
-          className="w-full px-5 pt-4 border-b border-neutral-700 max-h-[300px] overflow-y-auto relative"
+          className="w-full border-b border-neutral-700 relative overflow-hidden"
         >
-          <div className="sticky top-0 z-1 flex items-center justify-end">
-            <Button
-              size="xs"
-              onClick={() => {
-                setThink("");
-                setOpenThink(false);
-              }}
-            >
-              <X />
-              Close
-            </Button>
-          </div>
-          <div className="-translate-y-5">
-            <p className="text-xs text-neutral-400">AI is thinking...</p>
-            <p className="text-[13px] text-neutral-300 mt-1 whitespace-pre-line">
+          <header
+            className="flex items-center justify-between px-5 py-2.5 group hover:bg-neutral-600/20 transition-colors duration-200 cursor-pointer"
+            onClick={() => {
+              setOpenThink(!openThink);
+            }}
+          >
+            <p className="text-sm font-medium text-neutral-300 group-hover:text-neutral-200 transition-colors duration-200">
+              {isThinking ? "AI is thinking..." : "AI's plan"}
+            </p>
+            <ChevronDown
+              className={classNames(
+                "size-4 text-neutral-400 group-hover:text-neutral-300 transition-all duration-200",
+                {
+                  "rotate-180": openThink,
+                }
+              )}
+            />
+          </header>
+          <main
+            className={classNames(
+              "overflow-y-auto transition-all duration-200 ease-in-out",
+              {
+                "max-h-[0px]": !openThink,
+                "min-h-[250px] max-h-[250px] border-t border-neutral-700":
+                  openThink,
+              }
+            )}
+          >
+            <p className="text-[13px] text-neutral-400 whitespace-pre-line px-5 pb-4 pt-3">
               {think}
             </p>
-          </div>
+          </main>
         </div>
       )}
       <div
