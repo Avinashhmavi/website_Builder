@@ -37,11 +37,13 @@ function Header({
             alt="DeepSite Logo"
             className="size-6 lg:size-8 mr-2 invert-100 dark:invert-0"
           />
-          DeepSite
-          <span className="font-mono bg-gradient-to-br from-sky-500 to-emerald-500 text-neutral-950 rounded-full text-xs ml-2 px-1.5 py-0.5">
-            {" "}
-            v2
-          </span>
+          <p className="max-md:hidden flex items-center justify-start">
+            DeepSite
+            <span className="font-mono bg-gradient-to-br from-sky-500 to-emerald-500 text-neutral-950 rounded-full text-xs ml-2 px-1.5 py-0.5">
+              {" "}
+              v2
+            </span>
+          </p>
         </h1>
       </div>
       <div className="flex items-center justify-center gap-1">

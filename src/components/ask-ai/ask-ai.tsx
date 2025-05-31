@@ -130,6 +130,7 @@ function AskAI({
               }
               setThink(thinkMatch.replace("<think>", "").trim());
               contentThink += chunk;
+              return read();
             }
           }
 

@@ -87,7 +87,7 @@ function DeployButton({
                 {path ? "Update Space" : "Deploy to Space"}
               </Button>
               <Button variant="pink" size="sm" className="lg:hidden">
-                {path ? "Update Space" : "Deploy to Space"}
+                {path ? "Update" : "Deploy"}
               </Button>
             </div>
           </PopoverTrigger>
