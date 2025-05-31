@@ -343,14 +343,24 @@ app.post("/api/ask-ai", async (req, res) => {
       if (chunk) {
         let newChunk = chunk;
         if (!selectedModel?.isThinker) {
-          if (chunk.includes("</html>")) {
-            // Replace everything after the last </html> tag with an empty string
-            newChunk = newChunk.replace(/<\/html>[\s\S]*/, "</html>");
-          }
-          completeResponse += newChunk;
-          res.write(newChunk);
-          if (newChunk.includes("</html>")) {
-            break;
+          if (provider !== "sambanova") {
+            res.write(chunk);
+            completeResponse += chunk;
+
+            if (completeResponse.includes("</html>")) {
+              break;
+            }
+          } else {
+            let newChunk = chunk;
+            if (chunk.includes("</html>")) {
+              // Replace everything after the last </html> tag with an empty string
+              newChunk = newChunk.replace(/<\/html>[\s\S]*/, "</html>");
+            }
+            completeResponse += newChunk;
+            res.write(newChunk);
+            if (newChunk.includes("</html>")) {
+              break;
+            }
           }
         } else {
           // check if in the completeResponse there is already a </html> tag but after the last </think> tag, if yes break the loop
