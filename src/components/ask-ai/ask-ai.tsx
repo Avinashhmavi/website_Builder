@@ -178,13 +178,12 @@ function AskAI({
     }
   }, [isThinking]);
 
+  // TODO: auto scroll is not working properly, fix it
+
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-lg ring-[5px] focus-within:ring-sky-500/50 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
       {think && (
-        <div
-          ref={refThink}
-          className="w-full border-b border-neutral-700 relative overflow-hidden"
-        >
+        <div className="w-full border-b border-neutral-700 relative overflow-hidden">
           <header
             className="flex items-center justify-between px-5 py-2.5 group hover:bg-neutral-600/20 transition-colors duration-200 cursor-pointer"
             onClick={() => {
@@ -204,6 +203,7 @@ function AskAI({
             />
           </header>
           <main
+            ref={refThink}
             className={classNames(
               "overflow-y-auto transition-all duration-200 ease-in-out",
               {
