@@ -4,39 +4,17 @@ export const defaultHTML = `<!DOCTYPE html>
     <title>My app</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8">
-    <style>
-      body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        height: 100dvh;
-        font-family: "Arial", sans-serif;
-        text-align: center;
-        background-color: #fff;
-      }
-      .arrow {
-        position: absolute;
-        bottom: 32px;
-        left: 0px;
-        width: 100px;
-        transform: rotate(30deg);
-      }
-      h1 {
-        font-size: 50px;
-      }
-      h1 span {
-        color: #acacac;
-        font-size: 32px;
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <h1>
-      <span>I'm ready to work,</span><br />
-      Ask me anything.
-    </h1>
-    <img src="https://enzostvs-deepsite.hf.space/arrow.svg" class="arrow" />
+  <body class="flex justify-center items-center h-screen overflow-hidden bg-white font-sans text-center px-6">
+    <div class="w-full">
+      <span class="text-xs rounded-full mb-2 inline-block px-2 py-1 border border-amber-500/15 bg-amber-500/15 text-amber-500">🔥 New version dropped!</span>
+      <h1 class="text-4xl lg:text-6xl font-extrabold font-sans">
+        <span class="text-2xl lg:text-4xl text-gray-400 block font-semibold">I'm ready to work,</span>
+        Ask me anything.
+      </h1>
+    </div>
+      <img src="https://enzostvs-deepsite.hf.space/arrow.svg" class="absolute bottom-8 left-0 w-[100px] transform rotate-[30deg]" />
     <script></script>
   </body>
 </html>
