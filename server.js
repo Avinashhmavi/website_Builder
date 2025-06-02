@@ -378,7 +378,7 @@ app.post("/api/ask-ai", async (req, res) => {
 
 app.put("/api/ask-ai", async (req, res) => {
   const { prompt, html, previousPrompt, provider } = req.body;
-  if (!prompt || !html || !previousPrompt) {
+  if (!prompt || !html) {
     return res.status(400).send({
       ok: false,
       message: "Missing required fields",
@@ -490,7 +490,9 @@ ${REPLACE_END}
         },
         {
           role: "user",
-          content: previousPrompt,
+          content: previousPrompt
+            ? previousPrompt
+            : "You are modifying the HTML file based on the user's request.",
         },
         {
           role: "assistant",
