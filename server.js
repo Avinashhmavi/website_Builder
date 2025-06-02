@@ -227,6 +227,9 @@ app.post("/api/ask-ai", async (req, res) => {
     });
   }
 
+  const isFollowUp =
+    previousPrompt && previousPrompt.length > 0 && html && html.length > 0;
+
   const selectedModel = MODELS.find(
     (m) => m.value === model || m.label === model
   );
@@ -314,8 +317,9 @@ app.post("/api/ask-ai", async (req, res) => {
               },
             ]
           : []),
-        ...(html
-          ? [
+        ...(isFollowUp
+          ? // TODO try to do the git diff thing to only generate the changes and not the whole html
+            [
               {
                 role: "assistant",
                 content: `The current code is: ${html}.`,

@@ -60,6 +60,7 @@ function AskAI({
     setIsThinking(true);
 
     let contentResponse = "";
+    let thinkResponse = "";
     let lastRenderTime = 0;
     try {
       onNewPrompt(prompt);
@@ -121,10 +122,10 @@ function AskAI({
           }
 
           const chunk = decoder.decode(value, { stream: true });
-          contentResponse += chunk;
+          thinkResponse += chunk;
           if (selectedModel?.isThinker) {
-            const thinkMatch = contentResponse.match(/<think>[\s\S]*/)?.[0];
-            if (thinkMatch && !contentResponse?.includes("</think>")) {
+            const thinkMatch = thinkResponse.match(/<think>[\s\S]*/)?.[0];
+            if (thinkMatch && !thinkResponse?.includes("</think>")) {
               if ((contentThink?.length ?? 0) < 3) {
                 setOpenThink(true);
               }
@@ -133,6 +134,8 @@ function AskAI({
               return read();
             }
           }
+
+          contentResponse += chunk;
 
           const newHtml = contentResponse.match(/<!DOCTYPE html>[\s\S]*/)?.[0];
           if (newHtml) {
