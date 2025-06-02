@@ -461,9 +461,9 @@ ${REPLACE_END}
 
   const client = new InferenceClient(token);
 
-  let TOKENS_USED = prompt?.length;
-  if (previousPrompt) TOKENS_USED += previousPrompt.length;
-  if (html) TOKENS_USED += html.length;
+  // let TOKENS_USED = prompt?.length;
+  // if (previousPrompt) TOKENS_USED += previousPrompt.length;
+  // if (html) TOKENS_USED += html.length;
 
   const DEFAULT_PROVIDER = PROVIDERS.novita;
   const selectedProvider =
@@ -471,13 +471,13 @@ ${REPLACE_END}
       ? PROVIDERS[selectedModel.autoProvider]
       : PROVIDERS[provider] ?? DEFAULT_PROVIDER;
 
-  if (provider !== "auto" && TOKENS_USED >= selectedProvider.max_tokens) {
-    return res.status(400).send({
-      ok: false,
-      openSelectProvider: true,
-      message: `Context is too long. ${selectedProvider.name} allow ${selectedProvider.max_tokens} max tokens.`,
-    });
-  }
+  // if (provider !== "auto" && TOKENS_USED >= selectedProvider.max_tokens) {
+  //   return res.status(400).send({
+  //     ok: false,
+  //     openSelectProvider: true,
+  //     message: `Context is too long. ${selectedProvider.name} allow ${selectedProvider.max_tokens} max tokens.`,
+  //   });
+  // }
 
   try {
     const response = await client.chatCompletion({
