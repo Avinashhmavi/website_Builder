@@ -142,7 +142,7 @@ function Settings({
                       (m: { value: string }) => m.value === model
                     );
                     if (provider === "auto") {
-                      onChange(foundModel.providers[0]);
+                      onChange(foundModel.autoProvider);
                     } else {
                       onChange("auto");
                     }

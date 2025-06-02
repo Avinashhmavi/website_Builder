@@ -284,9 +284,7 @@ function AskAI({
           type="text"
           disabled={isAiWorking}
           className="w-full bg-transparent max-lg:text-sm outline-none px-3 text-white placeholder:text-neutral-400 font-code"
-          placeholder={
-            hasAsked ? "What do you want to ask AI next?" : "Ask AI anything..."
-          }
+          placeholder={hasAsked ? "Ask AI for edits" : "Ask AI anything..."}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {

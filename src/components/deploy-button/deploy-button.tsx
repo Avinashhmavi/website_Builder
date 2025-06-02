@@ -103,7 +103,7 @@ function DeployButton({
               </Login>
             ) : (
               <>
-                <header className="flex items-center text-sm px-4 py-2 border-b border-gray-200 gap-2 bg-gray-100 font-semibold text-gray-700">
+                <header className="flex items-center text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-semibold text-neutral-200">
                   <span className="text-xs bg-pink-500/10 text-pink-500 rounded-full pl-1.5 pr-2.5 py-0.5 flex items-center justify-start gap-1.5">
                     <img src={SpaceIcon} alt="Space Icon" className="size-4" />
                     Space
@@ -130,7 +130,7 @@ function DeployButton({
                   </p>
                   {!path && (
                     <label className="block">
-                      <p className="text-gray-600 text-sm font-medium mb-1.5">
+                      <p className="text-muted-foreground text-sm mb-1.5">
                         Space Title
                       </p>
                       <input

@@ -13,7 +13,7 @@ export default function History({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="sm" className="max-lg:hidden">
-          {history?.length} versions
+          {history?.length} edits
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -21,7 +21,7 @@ export default function History({
         align="start"
       >
         <header className="text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-semibold text-neutral-200">
-          Version History
+          History
         </header>
         <main className="px-4 space-y-3">
           <ul className="max-h-[250px] overflow-y-auto">

@@ -165,6 +165,10 @@ export default function App() {
     if (currentTab === "chat") {
       // Reset editor width when switching to reasoning tab
       resetLayout();
+      // re-add the event listener for resizing
+      if (resizer.current) {
+        resizer.current.addEventListener("mousedown", handleMouseDown);
+      }
     } else {
       if (preview.current) {
         // Reset preview width when switching to preview tab

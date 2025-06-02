@@ -72,7 +72,7 @@ function Footer({
                 <DropdownMenuTrigger asChild>
                   <p className="mr-3 text-xs lg:text-sm text-gray-300 flex items-center gap-1 cursor-pointer hover:brightness-110">
                     <ChevronDown className="size-4" />
-                    <Avatar className="size-7">
+                    <Avatar className="size-6 mr-1">
                       <AvatarImage src={auth?.picture} alt="@shadcn" />
                       <AvatarFallback className="text-sm">
                         {auth?.preferred_username?.charAt(0).toUpperCase() ??
