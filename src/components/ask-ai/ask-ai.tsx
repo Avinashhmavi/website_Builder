@@ -62,104 +62,145 @@ function AskAI({
     let contentResponse = "";
     let thinkResponse = "";
     let lastRenderTime = 0;
+
+    const isFollowUp =
+      previousPrompt && previousPrompt.length > 0 && html !== defaultHTML;
     try {
       onNewPrompt(prompt);
-      const request = await fetch("/api/ask-ai", {
-        method: "POST",
-        body: JSON.stringify({
-          prompt,
-          provider,
-          model,
-          ...(html === defaultHTML ? {} : { html }),
-          ...(previousPrompt ? { previousPrompt } : {}),
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (request && request.body) {
-        if (!request.ok) {
+      if (isFollowUp) {
+        const request = await fetch("/api/ask-ai", {
+          method: "PUT",
+          body: JSON.stringify({
+            prompt,
+            provider,
+            previousPrompt,
+            html,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (request && request.body) {
           const res = await request.json();
-          if (res.openLogin) {
-            setOpen(true);
-          } else if (res.openSelectProvider) {
-            setOpenProvider(true);
-            setProviderError(res.message);
-          } else if (res.openProModal) {
-            setOpenProModal(true);
-          } else {
-            toast.error(res.message);
-          }
-          setisAiWorking(false);
-          return;
-        }
-        const reader = request.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        const selectedModel = MODELS.find(
-          (m: { value: string }) => m.value === model
-        );
-        let contentThink: string | undefined = undefined;
-        const read = async () => {
-          const { done, value } = await reader.read();
-          if (done) {
-            toast.success("AI responded successfully");
-            setPreviousPrompt(prompt);
-            setPrompt("");
-            setisAiWorking(false);
-            setHasAsked(true);
-            audio.play();
-
-            // Now we have the complete HTML including </html>, so set it to be sure
-            const finalDoc = contentResponse.match(
-              /<!DOCTYPE html>[\s\S]*<\/html>/
-            )?.[0];
-            if (finalDoc) {
-              setHtml(finalDoc);
+          if (!request.ok) {
+            if (res.openLogin) {
+              setOpen(true);
+            } else if (res.openSelectProvider) {
+              setOpenProvider(true);
+              setProviderError(res.message);
+            } else if (res.openProModal) {
+              setOpenProModal(true);
+            } else {
+              toast.error(res.message);
             }
-            onSuccess(finalDoc ?? contentResponse, prompt);
-
+            setisAiWorking(false);
             return;
           }
+          setHtml(res.html);
+          toast.success("AI responded successfully");
+          setPreviousPrompt(prompt);
+          setPrompt("");
+          setisAiWorking(false);
+          onSuccess(res.html, prompt);
+        }
+      } else {
+        const request = await fetch("/api/ask-ai", {
+          method: "POST",
+          body: JSON.stringify({
+            prompt,
+            provider,
+            model,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (request && request.body) {
+          if (!request.ok) {
+            const res = await request.json();
+            if (res.openLogin) {
+              setOpen(true);
+            } else if (res.openSelectProvider) {
+              setOpenProvider(true);
+              setProviderError(res.message);
+            } else if (res.openProModal) {
+              setOpenProModal(true);
+            } else {
+              toast.error(res.message);
+            }
+            setisAiWorking(false);
+            return;
+          }
+          const reader = request.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          const selectedModel = MODELS.find(
+            (m: { value: string }) => m.value === model
+          );
+          let contentThink: string | undefined = undefined;
+          const read = async () => {
+            const { done, value } = await reader.read();
+            if (done) {
+              toast.success("AI responded successfully");
+              setPreviousPrompt(prompt);
+              setPrompt("");
+              setisAiWorking(false);
+              setHasAsked(true);
+              audio.play();
 
-          const chunk = decoder.decode(value, { stream: true });
-          thinkResponse += chunk;
-          if (selectedModel?.isThinker) {
-            const thinkMatch = thinkResponse.match(/<think>[\s\S]*/)?.[0];
-            if (thinkMatch && !thinkResponse?.includes("</think>")) {
-              if ((contentThink?.length ?? 0) < 3) {
-                setOpenThink(true);
+              // Now we have the complete HTML including </html>, so set it to be sure
+              const finalDoc = contentResponse.match(
+                /<!DOCTYPE html>[\s\S]*<\/html>/
+              )?.[0];
+              if (finalDoc) {
+                setHtml(finalDoc);
               }
-              setThink(thinkMatch.replace("<think>", "").trim());
-              contentThink += chunk;
-              return read();
-            }
-          }
+              onSuccess(finalDoc ?? contentResponse, prompt);
 
-          contentResponse += chunk;
-
-          const newHtml = contentResponse.match(/<!DOCTYPE html>[\s\S]*/)?.[0];
-          if (newHtml) {
-            setIsThinking(false);
-            let partialDoc = newHtml;
-            if (!partialDoc.includes("</html>")) {
-              partialDoc += "\n</html>";
+              return;
             }
 
-            // Throttle the re-renders to avoid flashing/flicker
-            const now = Date.now();
-            if (now - lastRenderTime > 300) {
-              setHtml(partialDoc);
-              lastRenderTime = now;
+            const chunk = decoder.decode(value, { stream: true });
+            thinkResponse += chunk;
+            if (selectedModel?.isThinker) {
+              const thinkMatch = thinkResponse.match(/<think>[\s\S]*/)?.[0];
+              if (thinkMatch && !thinkResponse?.includes("</think>")) {
+                if ((contentThink?.length ?? 0) < 3) {
+                  setOpenThink(true);
+                }
+                setThink(thinkMatch.replace("<think>", "").trim());
+                contentThink += chunk;
+                return read();
+              }
             }
 
-            if (partialDoc.length > 200) {
-              onScrollToBottom();
+            contentResponse += chunk;
+
+            const newHtml = contentResponse.match(
+              /<!DOCTYPE html>[\s\S]*/
+            )?.[0];
+            if (newHtml) {
+              setIsThinking(false);
+              let partialDoc = newHtml;
+              if (!partialDoc.includes("</html>")) {
+                partialDoc += "\n</html>";
+              }
+
+              // Throttle the re-renders to avoid flashing/flicker
+              const now = Date.now();
+              if (now - lastRenderTime > 300) {
+                setHtml(partialDoc);
+                lastRenderTime = now;
+              }
+
+              if (partialDoc.length > 200) {
+                onScrollToBottom();
+              }
             }
-          }
+            read();
+          };
+
           read();
-        };
-
-        read();
+        }
       }
     } catch (error: any) {
       setisAiWorking(false);

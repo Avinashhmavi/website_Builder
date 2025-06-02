@@ -11,7 +11,7 @@ export const PROVIDERS = {
   },
   sambanova: {
     name: "SambaNova",
-    max_tokens: 8_000,
+    max_tokens: 32_000,
     id: "sambanova",
   },
   novita: {
@@ -23,6 +23,11 @@ export const PROVIDERS = {
     name: "Hyperbolic",
     max_tokens: 131_000,
     id: "hyperbolic",
+  },
+  together: {
+    name: "Together AI",
+    max_tokens: 128_000,
+    id: "together",
   },
 };
 
@@ -36,7 +41,7 @@ export const MODELS = [
   {
     value: "deepseek-ai/DeepSeek-R1-0528",
     label: "DeepSeek R1 0528",
-    providers: ["fireworks-ai", "novita", "hyperbolic", "nebius"],
+    providers: ["fireworks-ai", "novita", "hyperbolic", "nebius", "together"],
     autoProvider: "novita",
     isNew: true,
     isThinker: true,

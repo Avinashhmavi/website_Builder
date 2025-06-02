@@ -32,6 +32,10 @@ const REDIRECT_URI =
   process.env.REDIRECT_URI || `http://localhost:${PORT}/auth/login`;
 const MAX_REQUESTS_PER_IP = 2;
 
+const SEARCH_START = "<<<<<<< SEARCH";
+const DIVIDER = "=======";
+const REPLACE_END = ">>>>>>> REPLACE";
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "dist")));
@@ -212,23 +216,15 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 });
 
 app.post("/api/ask-ai", async (req, res) => {
-  const { prompt, html, previousPrompt, provider, model } = req.body;
-  if (!prompt) {
+  const { prompt, provider, model } = req.body;
+  if (!prompt || !model) {
     return res.status(400).send({
       ok: false,
       message: "Missing required fields",
     });
   }
 
-  if (!model) {
-    return res.status(400).send({
-      ok: false,
-      message: "Missing model field",
-    });
-  }
-
-  const isFollowUp =
-    previousPrompt && previousPrompt.length > 0 && html && html.length > 0;
+  const initialSystemPrompt = `ONLY USE HTML, CSS AND JAVASCRIPT. If you want to use ICON make sure to import the library first. Try to create the best UI possible by using only HTML, CSS and JAVASCRIPT. MAKE IT RESPONSIVE USING TAILWINDCSS. Use as much as you can TailwindCSS for the CSS, if you can't do something with TailwindCSS, then use custom CSS (make sure to import <script src="https://cdn.tailwindcss.com"></script> in the head). Also, try to ellaborate as much as you can, to create something unique. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`;
 
   const selectedModel = MODELS.find(
     (m) => m.value === model || m.label === model
@@ -283,8 +279,6 @@ app.post("/api/ask-ai", async (req, res) => {
   let completeResponse = "";
 
   let TOKENS_USED = prompt?.length;
-  if (previousPrompt) TOKENS_USED += previousPrompt.length;
-  if (html) TOKENS_USED += html.length;
 
   const DEFAULT_PROVIDER = PROVIDERS.novita;
   const selectedProvider =
@@ -307,25 +301,8 @@ app.post("/api/ask-ai", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `ONLY USE HTML, CSS AND JAVASCRIPT. If you want to use ICON make sure to import the library first. Try to create the best UI possible by using only HTML, CSS and JAVASCRIPT. MAKE IT RESPONSIVE USING TAILWINDCSS. Use as much as you can TailwindCSS for the CSS, if you can't do something with TailwindCSS, then use custom CSS (make sure to import <script src="https://cdn.tailwindcss.com"></script> in the head). Also, try to ellaborate as much as you can, to create something unique. ALWAYS GIVE THE RESPONSE INTO A SINGLE HTML FILE`,
+          content: initialSystemPrompt,
         },
-        ...(previousPrompt
-          ? [
-              {
-                role: "user",
-                content: previousPrompt,
-              },
-            ]
-          : []),
-        ...(isFollowUp
-          ? // TODO try to do the git diff thing to only generate the changes and not the whole html
-            [
-              {
-                role: "assistant",
-                content: `The current code is: ${html}.`,
-              },
-            ]
-          : []),
         {
           role: "user",
           content: prompt,
@@ -357,7 +334,6 @@ app.post("/api/ask-ai", async (req, res) => {
           } else {
             let newChunk = chunk;
             if (chunk.includes("</html>")) {
-              // Replace everything after the last </html> tag with an empty string
               newChunk = newChunk.replace(/<\/html>[\s\S]*/, "</html>");
             }
             completeResponse += newChunk;
@@ -367,7 +343,6 @@ app.post("/api/ask-ai", async (req, res) => {
             }
           }
         } else {
-          // check if in the completeResponse there is already a </html> tag but after the last </think> tag, if yes break the loop
           const lastThinkTagIndex = completeResponse.lastIndexOf("</think>");
           completeResponse += newChunk;
           res.write(newChunk);
@@ -401,6 +376,203 @@ app.post("/api/ask-ai", async (req, res) => {
     } else {
       // Otherwise end the stream
       res.end();
+    }
+  }
+});
+
+app.put("/api/ask-ai", async (req, res) => {
+  const { prompt, html, previousPrompt, provider } = req.body;
+  if (!prompt || !html || !previousPrompt) {
+    return res.status(400).send({
+      ok: false,
+      message: "Missing required fields",
+    });
+  }
+  const followUpSystemPrompt = `You are an expert web developer modifying an existing HTML file.
+The user wants to apply changes based on their request.
+You MUST output ONLY the changes required using the following SEARCH/REPLACE block format. Do NOT output the entire file.
+Explain the changes briefly *before* the blocks if necessary, but the code changes THEMSELVES MUST be within the blocks.
+Format Rules:
+1. Start with ${SEARCH_START}
+2. Provide the exact lines from the current code that need to be replaced.
+3. Use ${DIVIDER} to separate the search block from the replacement.
+4. Provide the new lines that should replace the original lines.
+5. End with ${REPLACE_END}
+6. You can use multiple SEARCH/REPLACE blocks if changes are needed in different parts of the file.
+7. To insert code, use an empty SEARCH block (only ${SEARCH_START} and ${DIVIDER} on their lines) if inserting at the very beginning, otherwise provide the line *before* the insertion point in the SEARCH block and include that line plus the new lines in the REPLACE block.
+8. To delete code, provide the lines to delete in the SEARCH block and leave the REPLACE block empty (only ${DIVIDER} and ${REPLACE_END} on their lines).
+9. IMPORTANT: The SEARCH block must *exactly* match the current code, including indentation and whitespace.
+Example Modifying Code:
+\`\`\`
+Some explanation...
+${SEARCH_START}
+    <h1>Old Title</h1>
+${DIVIDER}
+    <h1>New Title</h1>
+${REPLACE_END}
+${SEARCH_START}
+  </body>
+${DIVIDER}
+    <script>console.log("Added script");</script>
+  </body>
+${REPLACE_END}
+\`\`\`
+Example Deleting Code:
+\`\`\`
+Removing the paragraph...
+${SEARCH_START}
+  <p>This paragraph will be deleted.</p>
+${DIVIDER}
+${REPLACE_END}
+\`\`\``;
+
+  // force to use deepseek-ai/DeepSeek-V3-0324 model, to avoid thinker models.
+  const selectedModel = MODELS[0];
+  if (!selectedModel.providers.includes(provider) && provider !== "auto") {
+    return res.status(400).send({
+      ok: false,
+      openSelectProvider: true,
+      message: `The selected model does not support the ${provider} provider.`,
+    });
+  }
+
+  let { hf_token } = req.cookies;
+  let token = hf_token;
+
+  if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
+    token = process.env.HF_TOKEN;
+  }
+
+  const ip =
+    req.headers["x-forwarded-for"]?.split(",")[0].trim() ||
+    req.headers["x-real-ip"] ||
+    req.socket.remoteAddress ||
+    req.ip ||
+    "0.0.0.0";
+
+  if (!token) {
+    ipAddresses.set(ip, (ipAddresses.get(ip) || 0) + 1);
+    if (ipAddresses.get(ip) > MAX_REQUESTS_PER_IP) {
+      return res.status(429).send({
+        ok: false,
+        openLogin: true,
+        message: "Log In to continue using the service",
+      });
+    }
+
+    token = process.env.DEFAULT_HF_TOKEN;
+  }
+
+  const client = new InferenceClient(token);
+
+  let TOKENS_USED = prompt?.length;
+  if (previousPrompt) TOKENS_USED += previousPrompt.length;
+  if (html) TOKENS_USED += html.length;
+
+  const DEFAULT_PROVIDER = PROVIDERS.novita;
+  const selectedProvider =
+    provider === "auto"
+      ? PROVIDERS[selectedModel.autoProvider]
+      : PROVIDERS[provider] ?? DEFAULT_PROVIDER;
+
+  if (provider !== "auto" && TOKENS_USED >= selectedProvider.max_tokens) {
+    return res.status(400).send({
+      ok: false,
+      openSelectProvider: true,
+      message: `Context is too long. ${selectedProvider.name} allow ${selectedProvider.max_tokens} max tokens.`,
+    });
+  }
+
+  try {
+    const response = await client.chatCompletion({
+      model: selectedModel.value,
+      provider: selectedProvider.id,
+      messages: [
+        {
+          role: "system",
+          content: followUpSystemPrompt,
+        },
+        {
+          role: "user",
+          content: previousPrompt,
+        },
+        {
+          role: "assistant",
+          content: `The current code is: \n\`\`\`html\n${html}\n\`\`\``,
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      ...(selectedProvider.id !== "sambanova"
+        ? {
+            max_tokens: selectedProvider.max_tokens,
+          }
+        : {}),
+    });
+
+    const chunk = response.choices[0]?.message?.content;
+
+    // return the new HTML using the html and the chunk
+    if (chunk) {
+      const searchStartIndex = chunk.indexOf(SEARCH_START);
+      const replaceEndIndex = chunk.indexOf(REPLACE_END);
+
+      if (
+        searchStartIndex === -1 ||
+        replaceEndIndex === -1 ||
+        replaceEndIndex <= searchStartIndex
+      ) {
+        return res.status(400).send({
+          ok: false,
+          message: "Invalid response format",
+        });
+      }
+
+      const searchBlock = chunk.substring(
+        searchStartIndex + SEARCH_START.length,
+        chunk.indexOf(DIVIDER)
+      );
+      const replaceBlock = chunk.substring(
+        chunk.indexOf(DIVIDER) + DIVIDER.length,
+        replaceEndIndex
+      );
+
+      let newHtml = html;
+
+      if (searchBlock.trim() === "") {
+        // Inserting at the beginning
+        newHtml = `${replaceBlock}\n${newHtml}`;
+      } else {
+        // Replacing existing code
+        newHtml = newHtml.replace(searchBlock, replaceBlock);
+      }
+
+      return res.status(200).send({
+        ok: true,
+        html: newHtml,
+      });
+    } else {
+      return res.status(400).send({
+        ok: false,
+        message: "No content returned from the model",
+      });
+    }
+  } catch (error) {
+    if (error.message.includes("exceeded your monthly included credits")) {
+      return res.status(402).send({
+        ok: false,
+        openProModal: true,
+        message: error.message,
+      });
+    }
+    if (!res.headersSent) {
+      res.status(500).send({
+        ok: false,
+        message:
+          error.message || "An error occurred while processing your request.",
+      });
     }
   }
 });
