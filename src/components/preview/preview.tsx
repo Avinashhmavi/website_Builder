@@ -53,7 +53,7 @@ function Preview({
           "w-full select-none transition-all duration-200 bg-black max-lg:h-full",
           {
             "pointer-events-none": isResizing || isAiWorking,
-            "lg:max-w-md lg:mx-auto lg:h-[80dvh] lg:!rounded-[64px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl":
+            "lg:max-w-md lg:mx-auto lg:h-[80dvh] lg:!rounded-[48px] lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl":
               device === "mobile",
             "h-full": device === "desktop",
             "lg:border-[8px] lg:border-neutral-700 lg:shadow-2xl lg:rounded-[44px]":

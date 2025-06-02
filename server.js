@@ -308,11 +308,7 @@ app.post("/api/ask-ai", async (req, res) => {
           content: prompt,
         },
       ],
-      ...(selectedProvider.id !== "sambanova"
-        ? {
-            max_tokens: selectedProvider.max_tokens,
-          }
-        : {}),
+      max_tokens: selectedProvider.max_tokens,
     });
 
     while (true) {
@@ -513,40 +509,61 @@ ${REPLACE_END}
     });
 
     const chunk = response.choices[0]?.message?.content;
+    // TO DO: handle the case where there are multiple SEARCH/REPLACE blocks
+    if (!chunk) {
+      return res.status(400).send({
+        ok: false,
+        message: "No content returned from the model",
+      });
+    }
 
-    // return the new HTML using the html and the chunk
     if (chunk) {
-      const searchStartIndex = chunk.indexOf(SEARCH_START);
-      const replaceEndIndex = chunk.indexOf(REPLACE_END);
-
-      if (
-        searchStartIndex === -1 ||
-        replaceEndIndex === -1 ||
-        replaceEndIndex <= searchStartIndex
-      ) {
-        return res.status(400).send({
-          ok: false,
-          message: "Invalid response format",
-        });
-      }
-
-      const searchBlock = chunk.substring(
-        searchStartIndex + SEARCH_START.length,
-        chunk.indexOf(DIVIDER)
-      );
-      const replaceBlock = chunk.substring(
-        chunk.indexOf(DIVIDER) + DIVIDER.length,
-        replaceEndIndex
-      );
-
       let newHtml = html;
 
-      if (searchBlock.trim() === "") {
-        // Inserting at the beginning
-        newHtml = `${replaceBlock}\n${newHtml}`;
-      } else {
-        // Replacing existing code
-        newHtml = newHtml.replace(searchBlock, replaceBlock);
+      // Find all search/replace blocks in the chunk
+      let position = 0;
+      let moreBlocks = true;
+
+      while (moreBlocks) {
+        const searchStartIndex = chunk.indexOf(SEARCH_START, position);
+        if (searchStartIndex === -1) {
+          moreBlocks = false;
+          continue;
+        }
+
+        const dividerIndex = chunk.indexOf(DIVIDER, searchStartIndex);
+        if (dividerIndex === -1) {
+          moreBlocks = false;
+          continue;
+        }
+
+        const replaceEndIndex = chunk.indexOf(REPLACE_END, dividerIndex);
+        if (replaceEndIndex === -1) {
+          moreBlocks = false;
+          continue;
+        }
+
+        // Extract the search and replace blocks
+        const searchBlock = chunk.substring(
+          searchStartIndex + SEARCH_START.length,
+          dividerIndex
+        );
+        const replaceBlock = chunk.substring(
+          dividerIndex + DIVIDER.length,
+          replaceEndIndex
+        );
+
+        // Apply the replacement
+        if (searchBlock.trim() === "") {
+          // Inserting at the beginning
+          newHtml = `${replaceBlock}\n${newHtml}`;
+        } else {
+          // Replacing existing code
+          newHtml = newHtml.replace(searchBlock, replaceBlock);
+        }
+
+        // Move position to after this block to find the next one
+        position = replaceEndIndex + REPLACE_END.length;
       }
 
       return res.status(200).send({

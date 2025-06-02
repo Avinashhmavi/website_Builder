@@ -63,8 +63,7 @@ function AskAI({
     let thinkResponse = "";
     let lastRenderTime = 0;
 
-    const isFollowUp =
-      previousPrompt && previousPrompt.length > 0 && html !== defaultHTML;
+    const isFollowUp = html !== defaultHTML;
     try {
       onNewPrompt(prompt);
       if (isFollowUp) {
@@ -102,6 +101,7 @@ function AskAI({
           setPrompt("");
           setisAiWorking(false);
           onSuccess(res.html, prompt);
+          audio.play();
         }
       } else {
         const request = await fetch("/api/ask-ai", {
