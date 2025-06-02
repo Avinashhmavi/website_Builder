@@ -377,7 +377,7 @@ app.post("/api/ask-ai", async (req, res) => {
 });
 
 app.put("/api/ask-ai", async (req, res) => {
-  const { prompt, html, previousPrompt, provider } = req.body;
+  const { prompt, html, previousPrompt } = req.body;
   if (!prompt || !html) {
     return res.status(400).send({
       ok: false,
@@ -424,13 +424,6 @@ ${REPLACE_END}
 
   // force to use deepseek-ai/DeepSeek-V3-0324 model, to avoid thinker models.
   const selectedModel = MODELS[0];
-  if (!selectedModel.providers.includes(provider) && provider !== "auto") {
-    return res.status(400).send({
-      ok: false,
-      openSelectProvider: true,
-      message: `The selected model does not support the ${provider} provider.`,
-    });
-  }
 
   let { hf_token } = req.cookies;
   let token = hf_token;
@@ -461,23 +454,7 @@ ${REPLACE_END}
 
   const client = new InferenceClient(token);
 
-  // let TOKENS_USED = prompt?.length;
-  // if (previousPrompt) TOKENS_USED += previousPrompt.length;
-  // if (html) TOKENS_USED += html.length;
-
-  const DEFAULT_PROVIDER = PROVIDERS.novita;
-  const selectedProvider =
-    provider === "auto"
-      ? PROVIDERS[selectedModel.autoProvider]
-      : PROVIDERS[provider] ?? DEFAULT_PROVIDER;
-
-  // if (provider !== "auto" && TOKENS_USED >= selectedProvider.max_tokens) {
-  //   return res.status(400).send({
-  //     ok: false,
-  //     openSelectProvider: true,
-  //     message: `Context is too long. ${selectedProvider.name} allow ${selectedProvider.max_tokens} max tokens.`,
-  //   });
-  // }
+  const selectedProvider = PROVIDERS[selectedModel.autoProvider];
 
   try {
     const response = await client.chatCompletion({
