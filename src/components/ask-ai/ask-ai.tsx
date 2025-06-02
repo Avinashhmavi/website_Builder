@@ -181,6 +181,18 @@ function AskAI({
             if (newHtml) {
               setIsThinking(false);
               let partialDoc = newHtml;
+              if (
+                partialDoc.includes("<head>") &&
+                !partialDoc.includes("</head>")
+              ) {
+                partialDoc += "\n</head>";
+              }
+              if (
+                partialDoc.includes("<body") &&
+                !partialDoc.includes("</body>")
+              ) {
+                partialDoc += "\n</body>";
+              }
               if (!partialDoc.includes("</html>")) {
                 partialDoc += "\n</html>";
               }
@@ -273,7 +285,7 @@ function AskAI({
         )}
       >
         {isAiWorking && (
-          <div className="absolute bg-neutral-800 rounded-lg bottom-0 left-10 w-[calc(100%-92px)] h-full z-1 flex items-center justify-start max-lg:text-sm">
+          <div className="absolute bg-neutral-800 rounded-lg bottom-0 left-11 w-[calc(100%-92px)] h-full z-1 flex items-center justify-start max-lg:text-sm">
             <p className="text-neutral-400 font-code">
               AI is {isThinking ? "thinking" : "coding"}...
             </p>
