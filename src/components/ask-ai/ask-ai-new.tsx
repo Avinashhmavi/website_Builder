@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import classNames from "classnames";
 import { toast } from "sonner";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { ArrowUp, ChevronDown, ImagePlus, X } from "lucide-react";
+import { ArrowUp, ChevronDown, X } from "lucide-react";
 import { FaStopCircle } from "react-icons/fa";
 
 import Login from "../login/login";
@@ -15,7 +15,6 @@ import { Button } from "../ui/button";
 // @ts-expect-error not needed
 import { MODELS } from "../../../utils/providers";
 import Loading from "../loading/loading";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { HtmlHistory } from "../../../utils/types";
 
 function AskAI({
@@ -38,7 +37,7 @@ function AskAI({
   onSuccess: (h: string, p: string, n?: number[][]) => void;
 }) {
   const refThink = useRef<HTMLDivElement | null>(null);
-  const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  // const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -253,16 +252,16 @@ function AskAI({
     }
   };
 
-  const handleUploadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const filesList = event.target.files;
-    if (filesList && filesList.length > 0) {
-      // add files to the state to show them in the UI
-      const newFiles = Array.from(filesList);
-      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-      // clear the input value to allow re-uploading the same file
-      event.target.value = "";
-    }
-  };
+  // const handleUploadFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const filesList = event.target.files;
+  //   if (filesList && filesList.length > 0) {
+  //     // add files to the state to show them in the UI
+  //     const newFiles = Array.from(filesList);
+  //     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  //     // clear the input value to allow re-uploading the same file
+  //     event.target.value = "";
+  //   }
+  // };
 
   useUpdateEffect(() => {
     if (refThink.current) {
@@ -378,27 +377,18 @@ function AskAI({
       </div>
       <div className="flex items-center justify-between gap-2 px-4 pb-3">
         <div className="flex-1">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
+          {/* <Button
                 size="iconXs"
                 variant="outline"
                 className="!border-neutral-600 !text-neutral-400 !hover:!border-neutral-500 hover:!text-neutral-300"
-                // onClick={() => {
-                //   if (uploadInputRef.current) {
-                //     uploadInputRef.current.click();
-                //   }
-                // }}
+                onClick={() => {
+                  if (uploadInputRef.current) {
+                    uploadInputRef.current.click();
+                  }
+                }}
               >
                 <ImagePlus className="size-4" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>
-                Attach files <span className="italic">(coming soon)</span>
-              </p>
-            </TooltipContent>
-          </Tooltip>
           <input
             ref={uploadInputRef}
             type="file"
@@ -407,7 +397,7 @@ function AskAI({
             onChange={handleUploadFile}
             className="hidden"
             id="file-upload"
-          />
+          /> */}
         </div>
         <div className="flex items-center justify-end gap-2">
           <Settings
