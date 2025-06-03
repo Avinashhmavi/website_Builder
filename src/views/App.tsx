@@ -266,6 +266,8 @@ export default function App() {
                       editorRef?.current
                         ?.getModel()
                         ?.deltaDecorations([], decorations);
+
+                      editorRef.current?.revealLine(updatedLines[0][0]);
                     }, 100);
                   }
                 }}

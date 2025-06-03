@@ -235,8 +235,6 @@ function AskAI({
     }
   }, [isThinking]);
 
-  // TODO: auto scroll is not working properly, fix it
-
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-lg ring-[5px] focus-within:ring-sky-500/50 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
       {think && (
@@ -337,7 +335,7 @@ function AskAI({
       ></div>
       <div
         className={classNames(
-          "absolute top-0 -translate-y-[calc(100%+8px)] right-0 z-10 w-80 bg-white border border-gray-200 rounded-lg shadow-lg transition-all duration-75 overflow-hidden",
+          "absolute top-0 -translate-y-[calc(100%+8px)] right-0 z-10 w-80 border border-neutral-800 !bg-neutral-900 rounded-lg shadow-lg transition-all duration-75 overflow-hidden",
           {
             "opacity-0 pointer-events-none": !open,
           }

@@ -550,7 +550,6 @@ ${REPLACE_END}
             const startLineNumber = beforeText.split("\n").length;
 
             // Count lines in search and replace blocks
-            const searchLines = searchBlock.split("\n").length;
             const replaceLines = replaceBlock.split("\n").length;
 
             // Calculate end line (start + length of replaced content)
