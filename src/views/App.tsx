@@ -34,6 +34,8 @@ export default function App() {
   const resizer = useRef<HTMLDivElement>(null);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const monacoRef = useRef<any>(null);
 
   const [html, setHtml] = useState((htmlStorage as string) ?? defaultHTML);
   const [isAiWorking, setisAiWorking] = useState(false);
@@ -222,14 +224,21 @@ export default function App() {
                   const newValue = value ?? "";
                   setHtml(newValue);
                 }}
-                onMount={(editor) => (editorRef.current = editor)}
+                onMount={(editor, monaco) => {
+                  editorRef.current = editor;
+                  monacoRef.current = monaco;
+                }}
               />
               <AskAI
                 html={html}
                 setHtml={(newHtml: string) => {
                   setHtml(newHtml);
                 }}
-                onSuccess={(finalHtml: string, p: string) => {
+                onSuccess={(
+                  finalHtml: string,
+                  p: string,
+                  updatedLines?: number[][]
+                ) => {
                   const currentHistory = [...htmlHistory];
                   currentHistory.unshift({
                     html: finalHtml,
@@ -240,6 +249,24 @@ export default function App() {
                   // if xs or sm
                   if (window.innerWidth <= 1024) {
                     setCurrentTab("preview");
+                  }
+                  if (updatedLines && updatedLines?.length > 0) {
+                    const decorations = updatedLines.map((line) => ({
+                      range: new monacoRef.current.Range(
+                        line[0],
+                        1,
+                        line[1],
+                        1
+                      ),
+                      options: {
+                        inlineClassName: "matched-line",
+                      },
+                    }));
+                    setTimeout(() => {
+                      editorRef?.current
+                        ?.getModel()
+                        ?.deltaDecorations([], decorations);
+                    }, 100);
                   }
                 }}
                 isAiWorking={isAiWorking}

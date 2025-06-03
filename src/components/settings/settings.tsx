@@ -105,7 +105,7 @@ function Settings({
                         label: string;
                         isNew?: boolean;
                       }) => (
-                        <SelectItem value={value} className="">
+                        <SelectItem key={value} value={value} className="">
                           {label}
                           {isNew && (
                             <span className="text-xs bg-gradient-to-br from-sky-400 to-sky-600 text-white rounded-full px-1.5 py-0.5">

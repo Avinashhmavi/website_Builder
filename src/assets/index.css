@@ -136,3 +136,7 @@
 .monaco-editor .line-numbers {
   @apply !text-neutral-500;
 }
+
+.matched-line {
+  @apply bg-sky-500/30;
+}

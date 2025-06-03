@@ -498,6 +498,8 @@ ${REPLACE_END}
 
     if (chunk) {
       let newHtml = html;
+      // array of arrays to hold updated lines (start and end line numbers)
+      const updatedLines = [];
 
       // Find all search/replace blocks in the chunk
       let position = 0;
@@ -536,9 +538,30 @@ ${REPLACE_END}
         if (searchBlock.trim() === "") {
           // Inserting at the beginning
           newHtml = `${replaceBlock}\n${newHtml}`;
+
+          // Track first line as updated
+          updatedLines.push([1, replaceBlock.split("\n").length]);
         } else {
-          // Replacing existing code
-          newHtml = newHtml.replace(searchBlock, replaceBlock);
+          // Find the position of the search block in the HTML
+          const blockPosition = newHtml.indexOf(searchBlock);
+          if (blockPosition !== -1) {
+            // Count lines before the search block
+            const beforeText = newHtml.substring(0, blockPosition);
+            const startLineNumber = beforeText.split("\n").length;
+
+            // Count lines in search and replace blocks
+            const searchLines = searchBlock.split("\n").length;
+            const replaceLines = replaceBlock.split("\n").length;
+
+            // Calculate end line (start + length of replaced content)
+            const endLineNumber = startLineNumber + replaceLines - 1;
+
+            // Track the line numbers that were updated
+            updatedLines.push([startLineNumber, endLineNumber]);
+
+            // Perform the replacement
+            newHtml = newHtml.replace(searchBlock, replaceBlock);
+          }
         }
 
         // Move position to after this block to find the next one
@@ -548,6 +571,7 @@ ${REPLACE_END}
       return res.status(200).send({
         ok: true,
         html: newHtml,
+        updatedLines,
       });
     } else {
       return res.status(400).send({

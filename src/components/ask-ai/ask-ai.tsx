@@ -31,7 +31,7 @@ function AskAI({
   isAiWorking: boolean;
   onNewPrompt: (prompt: string) => void;
   setisAiWorking: React.Dispatch<React.SetStateAction<boolean>>;
-  onSuccess: (h: string, p: string) => void;
+  onSuccess: (h: string, p: string, n?: number[][]) => void;
 }) {
   const refThink = useRef<HTMLDivElement | null>(null);
 
@@ -100,7 +100,7 @@ function AskAI({
           setPreviousPrompt(prompt);
           setPrompt("");
           setisAiWorking(false);
-          onSuccess(res.html, prompt);
+          onSuccess(res.html, prompt, res.updatedLines);
           audio.play();
         }
       } else {
