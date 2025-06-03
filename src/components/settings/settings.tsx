@@ -56,8 +56,9 @@ function Settings({
     <div className="">
       <Popover open={open} onOpenChange={onClose}>
         <PopoverTrigger asChild>
-          <Button variant="gray" size="icon">
-            <PiGearSixFill className="size-5" />
+          <Button variant="gray" size="sm">
+            <PiGearSixFill className="size-4" />
+            Settings
           </Button>
         </PopoverTrigger>
         <PopoverContent

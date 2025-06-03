@@ -21,7 +21,7 @@ import { defaultHTML } from "../../utils/consts";
 import DeployButton from "../components/deploy-button/deploy-button";
 import Preview from "../components/preview/preview";
 import Footer from "../components/footer/footer";
-import AskAI from "../components/ask-ai/ask-ai";
+import AskAI from "../components/ask-ai/ask-ai-new";
 
 export default function App() {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("html_content");
@@ -218,6 +218,9 @@ export default function App() {
                   fontLigatures: true,
                   theme: "vs-dark",
                   minimap: { enabled: false },
+                  scrollbar: {
+                    horizontal: "hidden",
+                  },
                 }}
                 value={html}
                 onChange={(value) => {
@@ -234,6 +237,7 @@ export default function App() {
                 setHtml={(newHtml: string) => {
                   setHtml(newHtml);
                 }}
+                htmlHistory={htmlHistory}
                 onSuccess={(
                   finalHtml: string,
                   p: string,
