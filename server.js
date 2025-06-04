@@ -204,6 +204,9 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
     await uploadFiles({
       repo,
       files,
+      commitTitle: `${prompts[prompts.length - 1]} - ${
+        prompts.length > 1 ? "Follow Up" : "Initial"
+      } Deployment`,
       accessToken: hf_token,
     });
     return res.status(200).send({ ok: true, path: repo.name });
