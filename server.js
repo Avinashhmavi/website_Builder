@@ -315,9 +315,7 @@ app.post("/api/ask-ai", async (req, res) => {
         ],
         max_tokens: selectedProvider.max_tokens,
       },
-      {
-        billTo: "huggingface",
-      }
+      billTo ? { billTo } : {}
     );
 
     while (true) {
