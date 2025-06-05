@@ -248,9 +248,11 @@ app.post("/api/ask-ai", async (req, res) => {
 
   let { hf_token } = req.cookies;
   let token = hf_token;
+  let billTo = null;
 
   if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
     token = process.env.HF_TOKEN;
+    billTo = "huggingface";
   }
 
   const ip =
@@ -298,21 +300,24 @@ app.post("/api/ask-ai", async (req, res) => {
   }
 
   try {
-    const chatCompletion = client.chatCompletionStream({
-      model: selectedModel.value,
-      provider: selectedProvider.id,
-      messages: [
-        {
-          role: "system",
-          content: initialSystemPrompt,
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      max_tokens: selectedProvider.max_tokens,
-    });
+    const chatCompletion = client.chatCompletionStream(
+      {
+        model: selectedModel.value,
+        provider: selectedProvider.id,
+        messages: [
+          {
+            role: "system",
+            content: initialSystemPrompt,
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: selectedProvider.max_tokens,
+      },
+      billTo ? { billTo } : {}
+    );
 
     while (true) {
       const { done, value } = await chatCompletion.next();
@@ -430,9 +435,11 @@ ${REPLACE_END}
 
   let { hf_token } = req.cookies;
   let token = hf_token;
+  let billTo = null;
 
   if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
     token = process.env.HF_TOKEN;
+    billTo = "huggingface";
   }
 
   const ip =
@@ -460,35 +467,38 @@ ${REPLACE_END}
   const selectedProvider = PROVIDERS[selectedModel.autoProvider];
 
   try {
-    const response = await client.chatCompletion({
-      model: selectedModel.value,
-      provider: selectedProvider.id,
-      messages: [
-        {
-          role: "system",
-          content: followUpSystemPrompt,
-        },
-        {
-          role: "user",
-          content: previousPrompt
-            ? previousPrompt
-            : "You are modifying the HTML file based on the user's request.",
-        },
-        {
-          role: "assistant",
-          content: `The current code is: \n\`\`\`html\n${html}\n\`\`\``,
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      ...(selectedProvider.id !== "sambanova"
-        ? {
-            max_tokens: selectedProvider.max_tokens,
-          }
-        : {}),
-    });
+    const response = await client.chatCompletion(
+      {
+        model: selectedModel.value,
+        provider: selectedProvider.id,
+        messages: [
+          {
+            role: "system",
+            content: followUpSystemPrompt,
+          },
+          {
+            role: "user",
+            content: previousPrompt
+              ? previousPrompt
+              : "You are modifying the HTML file based on the user's request.",
+          },
+          {
+            role: "assistant",
+            content: `The current code is: \n\`\`\`html\n${html}\n\`\`\``,
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        ...(selectedProvider.id !== "sambanova"
+          ? {
+              max_tokens: selectedProvider.max_tokens,
+            }
+          : {}),
+      },
+      billTo ? { billTo } : {}
+    );
 
     const chunk = response.choices[0]?.message?.content;
     // TO DO: handle the case where there are multiple SEARCH/REPLACE blocks
