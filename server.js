@@ -298,7 +298,6 @@ app.post("/api/ask-ai", async (req, res) => {
       message: `Context is too long. ${selectedProvider.name} allow ${selectedProvider.max_tokens} max tokens.`,
     });
   }
-
   try {
     const chatCompletion = client.chatCompletionStream(
       {
@@ -316,7 +315,9 @@ app.post("/api/ask-ai", async (req, res) => {
         ],
         max_tokens: selectedProvider.max_tokens,
       },
-      billTo ? { billTo } : {}
+      {
+        billTo: "huggingface",
+      }
     );
 
     while (true) {
@@ -465,7 +466,6 @@ ${REPLACE_END}
   const client = new InferenceClient(token);
 
   const selectedProvider = PROVIDERS[selectedModel.autoProvider];
-
   try {
     const response = await client.chatCompletion(
       {
