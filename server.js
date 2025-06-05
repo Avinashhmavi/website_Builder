@@ -252,7 +252,6 @@ app.post("/api/ask-ai", async (req, res) => {
 
   if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
     token = process.env.HF_TOKEN;
-    billTo = "huggingface";
   }
 
   const ip =
@@ -273,6 +272,7 @@ app.post("/api/ask-ai", async (req, res) => {
     }
 
     token = process.env.DEFAULT_HF_TOKEN;
+    billTo = "huggingface";
   }
 
   // Set up response headers for streaming
@@ -439,7 +439,6 @@ ${REPLACE_END}
 
   if (process.env.HF_TOKEN && process.env.HF_TOKEN !== "") {
     token = process.env.HF_TOKEN;
-    billTo = "huggingface";
   }
 
   const ip =
@@ -460,6 +459,7 @@ ${REPLACE_END}
     }
 
     token = process.env.DEFAULT_HF_TOKEN;
+    billTo = "huggingface";
   }
 
   const client = new InferenceClient(token);
