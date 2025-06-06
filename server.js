@@ -219,8 +219,14 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
 });
 
 app.post("/api/ask-ai", async (req, res) => {
-  const { prompt, provider, model } = req.body;
-  if (!prompt || !model) {
+  const { prompt, provider, model, redesignMarkdown } = req.body;
+  if (!model) {
+    return res.status(400).send({
+      ok: false,
+      message: "Missing required fields",
+    });
+  }
+  if (!redesignMarkdown && !prompt) {
     return res.status(400).send({
       ok: false,
       message: "Missing required fields",
@@ -310,7 +316,9 @@ app.post("/api/ask-ai", async (req, res) => {
           },
           {
             role: "user",
-            content: prompt,
+            content: redesignMarkdown
+              ? `Here is my current design as a markdown:\n\n${redesignMarkdown}\n\nNow, please create a new design based on this markdown.`
+              : prompt,
           },
         ],
         max_tokens: selectedProvider.max_tokens,
@@ -667,6 +675,43 @@ app.get("/api/remix/:username/:repo", async (req, res) => {
       html,
       isOwner: space.author === user?.preferred_username,
       path: repoId,
+    });
+  } catch (error) {
+    return res.status(500).send({
+      ok: false,
+      message: error.message,
+    });
+  }
+});
+
+app.post("/api/re-design", async (req, res) => {
+  const { url } = req.body;
+  if (!url) {
+    return res.status(400).send({
+      ok: false,
+      message: "Missing required fields",
+    });
+  }
+
+  // call the api https://r.jina.ai/{url} and return the response
+  try {
+    const response = await fetch(
+      `https://r.jina.ai/${encodeURIComponent(url)}`,
+      {
+        method: "POST",
+      }
+    );
+    if (!response.ok) {
+      return res.status(500).send({
+        ok: false,
+        message: "Failed to fetch redesign",
+      });
+    }
+    // return the html response
+    const markdown = await response.text();
+    return res.status(200).send({
+      ok: true,
+      markdown,
     });
   } catch (error) {
     return res.status(500).send({

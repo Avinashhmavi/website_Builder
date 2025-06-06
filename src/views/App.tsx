@@ -21,7 +21,7 @@ import { defaultHTML } from "../../utils/consts";
 import DeployButton from "../components/deploy-button/deploy-button";
 import Preview from "../components/preview/preview";
 import Footer from "../components/footer/footer";
-import AskAI from "../components/ask-ai/ask-ai-new";
+import AskAI from "../components/ask-ai/ask-ai";
 
 export default function App() {
   const [htmlStorage, , removeHtmlStorage] = useLocalStorage("html_content");

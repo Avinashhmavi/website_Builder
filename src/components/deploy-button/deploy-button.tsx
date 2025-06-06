@@ -92,7 +92,7 @@ function DeployButton({
             </div>
           </PopoverTrigger>
           <PopoverContent
-            className="p-0 overflow-hidden !bg-neutral-900"
+            className="!rounded-2xl p-0 overflow-hidden !bg-neutral-900"
             align="end"
           >
             {!auth ? (

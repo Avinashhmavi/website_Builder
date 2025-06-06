@@ -13,11 +13,11 @@ export default function History({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="sm" className="max-lg:hidden">
-          {history?.length} edits
+          {history?.length} edit{history.length !== 1 ? "s" : ""}
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="!p-0 overflow-hidden !bg-neutral-900"
+        className="!rounded-2xl !p-0 overflow-hidden !bg-neutral-900"
         align="start"
       >
         <header className="text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-semibold text-neutral-200">

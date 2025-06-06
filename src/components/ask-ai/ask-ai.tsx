@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useRef } from "react";
-import { RiSparkling2Fill } from "react-icons/ri";
-import { GrSend } from "react-icons/gr";
 import classNames from "classnames";
 import { toast } from "sonner";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { ChevronDown } from "lucide-react";
+import { ArrowUp, ChevronDown } from "lucide-react";
+import { FaStopCircle } from "react-icons/fa";
 
 import Login from "../login/login";
 import { defaultHTML } from "../../../utils/consts";
@@ -14,7 +13,11 @@ import Settings from "../settings/settings";
 import ProModal from "../pro-modal/pro-modal";
 import { Button } from "../ui/button";
 // @ts-expect-error not needed
-import { MODELS } from "./../../../utils/providers";
+import { MODELS } from "../../../utils/providers";
+import Loading from "../loading/loading";
+import { HtmlHistory } from "../../../utils/types";
+import InviteFriends from "../invite-friends/invite-friends";
+import ReImagine from "../re-imagine/re-imagine";
 
 function AskAI({
   html,
@@ -30,6 +33,7 @@ function AskAI({
   onScrollToBottom: () => void;
   isAiWorking: boolean;
   onNewPrompt: (prompt: string) => void;
+  htmlHistory?: HtmlHistory[];
   setisAiWorking: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess: (h: string, p: string, n?: number[][]) => void;
 }) {
@@ -47,12 +51,14 @@ function AskAI({
   const [think, setThink] = useState<string | undefined>(undefined);
   const [openThink, setOpenThink] = useState(false);
   const [isThinking, setIsThinking] = useState(true);
+  const [controller, setController] = useState<AbortController | null>(null);
 
   const audio = new Audio(SuccessSound);
   audio.volume = 0.5;
 
-  const callAi = async () => {
-    if (isAiWorking || !prompt.trim()) return;
+  const callAi = async (redesignMarkdown?: string) => {
+    if (isAiWorking) return;
+    if (!redesignMarkdown && !prompt.trim()) return;
     setisAiWorking(true);
     setProviderError("");
     setThink("");
@@ -64,9 +70,11 @@ function AskAI({
     let lastRenderTime = 0;
 
     const isFollowUp = html !== defaultHTML;
+    const abortController = new AbortController();
+    setController(abortController);
     try {
       onNewPrompt(prompt);
-      if (isFollowUp) {
+      if (isFollowUp && !redesignMarkdown) {
         const request = await fetch("/api/ask-ai", {
           method: "PUT",
           body: JSON.stringify({
@@ -78,6 +86,7 @@ function AskAI({
           headers: {
             "Content-Type": "application/json",
           },
+          signal: abortController.signal,
         });
         if (request && request.body) {
           const res = await request.json();
@@ -110,10 +119,12 @@ function AskAI({
             prompt,
             provider,
             model,
+            redesignMarkdown,
           }),
           headers: {
             "Content-Type": "application/json",
           },
+          signal: abortController.signal,
         });
         if (request && request.body) {
           if (!request.ok) {
@@ -223,6 +234,17 @@ function AskAI({
     }
   };
 
+  const stopController = () => {
+    if (controller) {
+      controller.abort();
+      setController(null);
+      setisAiWorking(false);
+      setThink("");
+      setOpenThink(false);
+      setIsThinking(false);
+    }
+  };
+
   useUpdateEffect(() => {
     if (refThink.current) {
       refThink.current.scrollTop = refThink.current.scrollHeight;
@@ -236,7 +258,7 @@ function AskAI({
   }, [isThinking]);
 
   return (
-    <div className="bg-neutral-800 border border-neutral-700 rounded-lg ring-[5px] focus-within:ring-sky-500/50 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
+    <div className="bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
       {think && (
         <div className="w-full border-b border-neutral-700 relative overflow-hidden">
           <header
@@ -274,37 +296,46 @@ function AskAI({
           </main>
         </div>
       )}
-      <div
-        className={classNames(
-          "w-full relative flex items-center justify-between pl-3.5 p-2 lg:p-2 lg:pl-4",
-          {
-            "animate-pulse": isAiWorking,
-          }
-        )}
-      >
+      <div className="w-full relative flex items-center justify-between">
         {isAiWorking && (
-          <div className="absolute bg-neutral-800 rounded-lg bottom-0 left-11 w-[calc(100%-92px)] h-full z-1 flex items-center justify-start max-lg:text-sm">
-            <p className="text-neutral-400 font-code">
-              AI is {isThinking ? "thinking" : "coding"}...
-            </p>
+          <div className="absolute bg-neutral-800 rounded-lg bottom-0 left-4 w-[calc(100%-30px)] h-full z-1 flex items-center justify-between max-lg:text-sm">
+            <div className="flex items-center justify-start gap-2">
+              <Loading overlay={false} className="!size-4" />
+              <p className="text-neutral-400 text-sm">
+                AI is {isThinking ? "thinking" : "coding"}...{" "}
+              </p>
+            </div>
+            <div
+              className="text-xs text-neutral-400 px-1 py-0.5 rounded-md border border-neutral-600 flex items-center justify-center gap-1.5 bg-neutral-800 hover:brightness-110 transition-all duration-200 cursor-pointer"
+              onClick={stopController}
+            >
+              <FaStopCircle />
+              Stop generation
+            </div>
           </div>
         )}
-        <RiSparkling2Fill className="size-5 text-neutral-400 group-focus-within:text-sky-500" />
         <input
           type="text"
           disabled={isAiWorking}
-          className="w-full bg-transparent max-lg:text-sm outline-none px-3 text-white placeholder:text-neutral-400 font-code"
-          placeholder={hasAsked ? "Ask AI for edits" : "Ask AI anything..."}
+          className="w-full bg-transparent text-sm outline-none text-white placeholder:text-neutral-400 p-4"
+          placeholder={
+            hasAsked ? "Ask DeepSite for edits" : "Ask DeepSite anything..."
+          }
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (e.key === "Enter" && !e.shiftKey) {
               callAi();
             }
           }}
         />
+      </div>
+      <div className="flex items-center justify-between gap-2 px-4 pb-3">
+        <div className="flex-1 flex items-center justify-start gap-1.5">
+          <ReImagine onRedesign={(md) => callAi(md)} />
+          <InviteFriends />
+        </div>
         <div className="flex items-center justify-end gap-2">
-          {/* <SpeechPrompt setPrompt={setPrompt} /> */}
           <Settings
             provider={provider as string}
             model={model as string}
@@ -315,12 +346,11 @@ function AskAI({
             onClose={setOpenProvider}
           />
           <Button
-            variant="pink"
-            size="icon"
+            size="iconXs"
             disabled={isAiWorking || !prompt.trim()}
-            onClick={callAi}
+            onClick={() => callAi()}
           >
-            <GrSend className="-translate-x-[1px]" />
+            <ArrowUp className="size-4" />
           </Button>
         </div>
       </div>

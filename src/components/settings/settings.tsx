@@ -62,7 +62,7 @@ function Settings({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="p-0 !w-96 overflow-hidden !bg-neutral-900"
+          className="!rounded-2xl p-0 !w-96 overflow-hidden !bg-neutral-900"
           align="center"
         >
           <header className="flex items-center text-sm px-4 py-3 border-b gap-2 bg-neutral-950 border-neutral-800 font-semibold text-neutral-200">
