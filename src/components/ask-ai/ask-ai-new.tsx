@@ -24,7 +24,6 @@ function AskAI({
   onScrollToBottom,
   isAiWorking,
   setisAiWorking,
-  htmlHistory,
   onNewPrompt,
   onSuccess,
 }: {
