@@ -268,7 +268,7 @@ function AskAI({
             }}
           >
             <p className="text-sm font-medium text-neutral-300 group-hover:text-neutral-200 transition-colors duration-200">
-              {isThinking ? "AI is thinking..." : "AI's plan"}
+              {isThinking ? "DeepSite is thinking..." : "DeepSite's plan"}
             </p>
             <ChevronDown
               className={classNames(

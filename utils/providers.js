@@ -41,7 +41,14 @@ export const MODELS = [
   {
     value: "deepseek-ai/DeepSeek-R1-0528",
     label: "DeepSeek R1 0528",
-    providers: ["fireworks-ai", "novita", "hyperbolic", "nebius", "together"],
+    providers: [
+      "fireworks-ai",
+      "novita",
+      "hyperbolic",
+      "nebius",
+      "together",
+      "sambanova",
+    ],
     autoProvider: "novita",
     isNew: true,
     isThinker: true,
