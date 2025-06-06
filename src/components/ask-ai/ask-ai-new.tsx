@@ -240,14 +240,6 @@ function AskAI({
       setThink("");
       setOpenThink(false);
       setIsThinking(false);
-      if (htmlHistory && htmlHistory?.length > 0) {
-        const lastHtml = htmlHistory[htmlHistory.length - 1].html;
-        setHtml(lastHtml);
-        toast.info("AI generation stopped, reverted to last HTML");
-      } else {
-        setHtml(defaultHTML);
-        toast.info("AI generation stopped");
-      }
     }
   };
 
