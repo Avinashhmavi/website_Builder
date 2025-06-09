@@ -1,6 +1,8 @@
-import classNames from "classnames";
 import { useLocalStorage } from "react-use";
 import { defaultHTML } from "../../../utils/consts";
+import { Dialog, DialogContent } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { CheckCheck } from "lucide-react";
 
 function ProModal({
   open,
@@ -20,51 +22,73 @@ function ProModal({
   };
 
   return (
-    <>
-      <div
-        className={classNames(
-          "h-screen w-screen bg-black/20 fixed left-0 top-0 z-40",
-          {
-            "opacity-0 pointer-events-none": !open,
-          }
-        )}
-        onClick={() => onClose(false)}
-      ></div>
-      <div
-        className={classNames(
-          "absolute top-0 -translate-y-[calc(100%+16px)] right-0 z-40 w-96 bg-white border border-gray-200 rounded-lg shadow-lg transition-all duration-75 overflow-hidden",
-          {
-            "opacity-0 pointer-events-none": !open,
-          }
-        )}
-      >
-        <header className="flex items-center text-sm px-4 py-2 border-b border-gray-200 gap-2 bg-gray-100 font-semibold text-gray-700">
-          <span className="bg-linear-to-br shadow-green-500/10 dark:shadow-green-500/20 inline-block -skew-x-12 border border-gray-200 from-pink-300 via-green-200 to-yellow-200 text-xs font-bold text-black shadow-lg dark:from-pink-500 dark:via-green-500 dark:to-yellow-500 dark:text-black rounded-lg px-2.5 py-0.5 ">
-            PRO
-          </span>
-          Your free inference quota is exhausted
-        </header>
-        <main className="px-4 pt-3 pb-4">
-          <p className="text-gray-950 text-sm font-semibold flex items-center justify-between">
-            Upgrade to a PRO account to activate Inference Providers and
-            continue using DeepSite.
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-lg lg:!p-8 !rounded-3xl !bg-white !border-neutral-100">
+        <main className="flex flex-col items-start text-left relative pt-2">
+          <div className="flex items-center justify-start -space-x-4 mb-5">
+            <div className="size-14 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-3xl opacity-50">
+              🚀
+            </div>
+            <div className="size-16 rounded-full bg-amber-200 shadow-2xl flex items-center justify-center text-4xl z-2">
+              🤩
+            </div>
+            <div className="size-14 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-3xl opacity-50">
+              🥳
+            </div>
+          </div>
+          <p className="text-2xl font-bold text-neutral-950">
+            Only 9$ for unlimited access!
           </p>
-          <p className="text-sm text-pretty text-gray-500 mt-2">
-            It also unlocks thousands of Space apps powered by ZeroGPU for 3d,
-            audio, music, video and more!
+          <p className="text-neutral-500 text-base mt-2 max-w-sm">
+            It seems like you have reached the monthly free limit of DeepSite.
           </p>
-          <a
-            href="https://huggingface.co/subscribe/pro"
-            target="_blank"
-            className="mt-4 bg-black text-white cursor-pointer rounded-full py-2 px-3 text-sm font-medium w-full block text-center hover:bg-gray-800 transition duration-200 ease-in-out"
+          <hr className="bg-neutral-200 w-full max-w-[150px] my-6" />
+          <p className="text-lg mt-3 text-neutral-900 font-semibold">
+            Upgrade to a <ProTag className="mx-1" /> Account, and unlock:
+          </p>
+          <ul className="mt-3 space-y-1 text-neutral-500">
+            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
+              <CheckCheck className="text-emerald-500 size-4" />
+              DeepSite unlimited access to all Inference Providers
+            </li>
+            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
+              <CheckCheck className="text-emerald-500 size-4" />
+              Get highest priority and 8x more quota on Spaces ZeroGPU
+            </li>
+            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
+              <CheckCheck className="text-emerald-500 size-4" />
+              Activate Dataset Viewer on private datasets
+            </li>
+            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
+              <CheckCheck className="text-emerald-500 size-4" />
+              Get exclusive early access to new features and updates
+            </li>
+            <li className="text-sm space-x-2 flex items-center justify-start gap-2">
+              <CheckCheck className="text-emerald-500 size-4" />
+              Get free credits across all Inference Providers
+            </li>
+            <li className="text-sm text-neutral-500 space-x-2 flex items-center justify-start gap-2 mt-3">
+              ... and much more!
+            </li>
+          </ul>
+          <Button
+            variant="gray"
+            size="lg"
+            className="w-full !text-base !h-11 mt-8"
             onClick={handleProClick}
           >
             Subscribe to PRO ($9/month)
-          </a>
+          </Button>
         </main>
-      </div>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }
-
+const ProTag = ({ className }: { className?: string }) => (
+  <span
+    className={`${className} bg-linear-to-br shadow-green-500/10 dark:shadow-green-500/20 inline-block -skew-x-12 border border-gray-200 from-pink-300 via-green-200 to-yellow-200 text-xs font-bold text-black shadow-lg rounded-md px-2.5 py-0.5`}
+  >
+    PRO
+  </span>
+);
 export default ProModal;
