@@ -68,18 +68,28 @@ export default function ReImagine({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="!rounded-2xl !p-5 !bg-white !border-neutral-100 min-w-xs text-center"
+          className="!rounded-2xl !p-0 !bg-white !border-neutral-100 min-w-xs text-center overflow-hidden"
         >
-          <header className="mb-5">
+          <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
+            <div className="flex items-center justify-center -space-x-4 mb-3">
+              <div className="size-9 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+                🎨
+              </div>
+              <div className="size-11 rounded-full bg-amber-200 shadow-2xl flex items-center justify-center text-2xl z-2">
+                🥳
+              </div>
+              <div className="size-9 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+                💎
+              </div>
+            </div>
             <p className="text-xl font-semibold text-neutral-950">
               Re-Design your Site!
             </p>
-            <p className="text-sm text-neutral-500 mt-1.5 mb-6">
+            <p className="text-sm text-neutral-500 mt-1.5">
               Try our new Re-Design feature to give your site a fresh look.
             </p>
-            <hr className="bg-neutral-200 max-w-44 mx-auto" />
           </header>
-          <main className="space-y-4">
+          <main className="space-y-4 p-6">
             <div>
               <p className="text-sm text-neutral-700 mb-2">
                 Enter your website URL to get started:
