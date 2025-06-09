@@ -120,9 +120,8 @@ export default function ReImagine({
               </p>
               <Button
                 variant="gray"
-                size="sm"
                 onClick={handleClick}
-                className="relative"
+                className="relative w-full"
                 disabled={isLoading}
               >
                 Re-Design <Paintbrush className="size-4" />
