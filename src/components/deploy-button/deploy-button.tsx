@@ -10,20 +10,6 @@ import LoadButton from "../load-button/load-button";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-const MsgToast = ({ url }: { url: string }) => (
-  <div className="w-full flex items-center justify-center gap-3">
-    Your space is live!
-    <button
-      className="bg-black text-sm block text-white rounded-md px-3 py-1.5 hover:bg-gray-900 cursor-pointer"
-      onClick={() => {
-        window.open(url, "_blank");
-      }}
-    >
-      See Space
-    </button>
-  </div>
-);
-
 function DeployButton({
   html,
   auth,
@@ -60,11 +46,17 @@ function DeployButton({
       });
       const response = await request.json();
       if (response.ok) {
-        toast.success(
-          <MsgToast
-            url={`https://huggingface.co/spaces/${response.path ?? path}`}
-          />
-        );
+        toast.success("Your space is live! 🎉", {
+          action: {
+            label: "See Space",
+            onClick: () => {
+              window.open(
+                `https://huggingface.co/spaces/${response.path ?? path}`,
+                "_blank"
+              );
+            },
+          },
+        });
         setPath(response.path);
       } else {
         toast.error(response.message);
