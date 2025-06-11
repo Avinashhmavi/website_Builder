@@ -83,10 +83,10 @@ export default function ReImagine({
               </div>
             </div>
             <p className="text-xl font-semibold text-neutral-950">
-              Re-Design your Site!
+              Redesign your Site!
             </p>
             <p className="text-sm text-neutral-500 mt-1.5">
-              Try our new Re-Design feature to give your site a fresh look.
+              Try our new Redesign feature to give your site a fresh look.
             </p>
           </header>
           <main className="space-y-4 p-6">
@@ -116,7 +116,7 @@ export default function ReImagine({
             </div>
             <div>
               <p className="text-sm text-neutral-700 mb-2">
-                Then, let's re-design it!
+                Then, let's redesign it!
               </p>
               <Button
                 variant="gray"
@@ -124,7 +124,7 @@ export default function ReImagine({
                 className="relative w-full"
                 disabled={isLoading}
               >
-                Re-Design <Paintbrush className="size-4" />
+                Redesign <Paintbrush className="size-4" />
                 {isLoading && <Loading className="ml-2 size-4 animate-spin" />}
               </Button>
             </div>
