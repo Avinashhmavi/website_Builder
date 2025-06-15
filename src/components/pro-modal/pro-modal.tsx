@@ -40,7 +40,7 @@ function ProModal({
             Only 9$ for unlimited access!
           </p>
           <p className="text-neutral-500 text-base mt-2 max-w-sm">
-            It seems like you have reached the monthly free limit of DeepSite.
+            It seems like you have reached the monthly free limit of Asho website modifer.
           </p>
           <hr className="bg-neutral-200 w-full max-w-[150px] my-6" />
           <p className="text-lg mt-3 text-neutral-900 font-semibold">
@@ -49,7 +49,7 @@ function ProModal({
           <ul className="mt-3 space-y-1 text-neutral-500">
             <li className="text-sm space-x-2 flex items-center justify-start gap-2">
               <CheckCheck className="text-emerald-500 size-4" />
-              DeepSite unlimited access to all Inference Providers
+              Asho website modifer unlimited access to all Inference Providers
             </li>
             <li className="text-sm space-x-2 flex items-center justify-start gap-2">
               <CheckCheck className="text-emerald-500 size-4" />

@@ -182,7 +182,7 @@ export default function App() {
   return (
     <ThemeProvider
       defaultTheme="dark"
-      storageKey="deepsite-ui-theme"
+      storageKey="asho-ui-theme"
       className="h-screen bg-slate-100 dark:bg-neutral-950 flex flex-col"
     >
       <Header tab={currentTab} onNewTab={setCurrentTab}>

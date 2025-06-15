@@ -1,8 +1,6 @@
 import { ReactNode } from "react";
 import { Eye, MessageCircleCode } from "lucide-react";
 
-import Logo from "@/assets/logo.svg";
-
 import { Button } from "./../../components/ui/button";
 import classNames from "classnames";
 
@@ -33,16 +31,12 @@ function Header({
       <div className="flex items-center justify-start gap-3">
         <h1 className="text-neutral-900 dark:text-white text-lg lg:text-xl font-bold flex items-center justify-start">
           <img
-            src={Logo}
-            alt="DeepSite Logo"
+            src={"/ash.png"}
+            alt="Asho website modifer Logo"
             className="size-6 lg:size-8 mr-2 invert-100 dark:invert-0"
           />
           <p className="max-md:hidden flex items-center justify-start">
-            DeepSite
-            <span className="font-mono bg-gradient-to-br from-sky-500 to-emerald-500 text-neutral-950 rounded-full text-xs ml-2 px-1.5 py-0.5">
-              {" "}
-              v2
-            </span>
+            Asho website modifer
           </p>
         </h1>
       </div>

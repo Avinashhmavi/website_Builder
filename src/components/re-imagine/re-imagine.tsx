@@ -47,7 +47,7 @@ export default function ReImagine({
       setOpen(false);
       setUrl("");
       onRedesign(response.markdown);
-      toast.success("DeepSite is re-designing your site! Let him cook... 🔥");
+      toast.success("Asho website modifer is re-designing your site! Let him cook... 🔥");
     } else {
       toast.error(response.message || "Failed to re-design the site.");
     }
@@ -68,30 +68,30 @@ export default function ReImagine({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="!rounded-2xl !p-0 !bg-white !border-neutral-100 min-w-xs text-center overflow-hidden"
+          className="!rounded-2xl !p-0 !bg-neutral-900 !border-neutral-700 min-w-xs text-center overflow-hidden"
         >
-          <header className="bg-neutral-50 p-6 border-b border-neutral-200/60">
+          <header className="bg-neutral-800 p-6 border-b border-neutral-700/60">
             <div className="flex items-center justify-center -space-x-4 mb-3">
-              <div className="size-9 rounded-full bg-pink-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+              <div className="size-9 rounded-full bg-pink-700 shadow-2xs flex items-center justify-center text-xl opacity-70">
                 🎨
               </div>
-              <div className="size-11 rounded-full bg-amber-200 shadow-2xl flex items-center justify-center text-2xl z-2">
+              <div className="size-11 rounded-full bg-amber-500 shadow-2xl flex items-center justify-center text-2xl z-2">
                 🥳
               </div>
-              <div className="size-9 rounded-full bg-sky-200 shadow-2xs flex items-center justify-center text-xl opacity-50">
+              <div className="size-9 rounded-full bg-sky-700 shadow-2xs flex items-center justify-center text-xl opacity-70">
                 💎
               </div>
             </div>
-            <p className="text-xl font-semibold text-neutral-950">
+            <p className="text-xl font-semibold text-white">
               Redesign your Site!
             </p>
-            <p className="text-sm text-neutral-500 mt-1.5">
+            <p className="text-sm text-neutral-300 mt-1.5">
               Try our new Redesign feature to give your site a fresh look.
             </p>
           </header>
           <main className="space-y-4 p-6">
             <div>
-              <p className="text-sm text-neutral-700 mb-2">
+              <p className="text-sm text-neutral-200 mb-2">
                 Enter your website URL to get started:
               </p>
               <Input
@@ -111,17 +111,17 @@ export default function ReImagine({
                   }
                   setUrl(inputUrl);
                 }}
-                className="!bg-white !border-neutral-300 !text-neutral-800 !placeholder:text-neutral-400 selection:!bg-blue-100"
+                className="!bg-neutral-800 !border-neutral-600 !text-white !placeholder:text-neutral-400 selection:!bg-blue-900"
               />
             </div>
             <div>
-              <p className="text-sm text-neutral-700 mb-2">
+              <p className="text-sm text-neutral-200 mb-2">
                 Then, let's redesign it!
               </p>
               <Button
                 variant="gray"
                 onClick={handleClick}
-                className="relative w-full"
+                className="relative w-full !bg-teal-700 !text-white !border-none hover:!bg-teal-600"
                 disabled={isLoading}
               >
                 Redesign <Paintbrush className="size-4" />

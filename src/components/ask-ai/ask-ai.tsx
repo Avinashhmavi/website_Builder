@@ -16,7 +16,6 @@ import { Button } from "../ui/button";
 import { MODELS } from "../../../utils/providers";
 import Loading from "../loading/loading";
 import { HtmlHistory } from "../../../utils/types";
-import InviteFriends from "../invite-friends/invite-friends";
 import ReImagine from "../re-imagine/re-imagine";
 
 function AskAI({
@@ -259,6 +258,10 @@ function AskAI({
 
   return (
     <div className="bg-neutral-800 border border-neutral-700 rounded-2xl ring-[4px] focus-within:ring-neutral-500/30 focus-within:border-neutral-600 ring-transparent z-10 absolute bottom-3 left-3 w-[calc(100%-20px)] group">
+      <div className="w-full flex flex-col items-center justify-center py-8">
+        <h1 className="text-3xl font-bold text-white mb-2">Pokémon, I choose you!</h1>
+        <span className="text-lg text-neutral-300">I'm ready to work.</span>
+      </div>
       {think && (
         <div className="w-full border-b border-neutral-700 relative overflow-hidden">
           <header
@@ -268,7 +271,7 @@ function AskAI({
             }}
           >
             <p className="text-sm font-medium text-neutral-300 group-hover:text-neutral-200 transition-colors duration-200">
-              {isThinking ? "DeepSite is thinking..." : "DeepSite's plan"}
+              {isThinking ? "Asho website modifer is thinking..." : "Asho website modifer's plan"}
             </p>
             <ChevronDown
               className={classNames(
@@ -319,7 +322,7 @@ function AskAI({
           disabled={isAiWorking}
           className="w-full bg-transparent text-sm outline-none text-white placeholder:text-neutral-400 p-4"
           placeholder={
-            hasAsked ? "Ask DeepSite for edits" : "Ask DeepSite anything..."
+            hasAsked ? "Ask Asho website modifer for edits" : "Ask Asho website modifer anything..."
           }
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
@@ -333,7 +336,6 @@ function AskAI({
       <div className="flex items-center justify-between gap-2 px-4 pb-3">
         <div className="flex-1 flex items-center justify-start gap-1.5">
           <ReImagine onRedesign={(md) => callAi(md)} />
-          <InviteFriends />
         </div>
         <div className="flex items-center justify-end gap-2">
           <Settings

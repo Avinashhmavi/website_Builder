@@ -1,10 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Poppins:wght@400;600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 * {
-  font-family: "Noto Sans";
+  font-family: 'Poppins', 'Montserrat', 'Inter', Arial, sans-serif;
 }
 
 .font-code {
@@ -50,25 +51,25 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --radius: 1rem;
+  --background: #181A20;
+  --foreground: #fff;
+  --card: #23262F;
+  --card-foreground: #fff;
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: #4F8A8B;
+  --primary-foreground: #fff;
+  --secondary: #FBD46D;
+  --secondary-foreground: #181A20;
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: #FBD46D;
+  --accent-foreground: #181A20;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #353945;
+  --input: #353945;
+  --ring: #4F8A8B;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -127,16 +128,87 @@
   }
 }
 
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
+}
+
+.card, .preview-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 24px 0 rgba(79, 138, 139, 0.10);
+  padding: 2rem 2.5rem;
+  margin: 1.5rem auto;
+  max-width: 900px;
+  border: 1px solid var(--border);
+}
+
+header, .header-bar {
+  background: linear-gradient(90deg, #23262F 60%, #4F8A8B 100%);
+  color: #fff;
+  padding: 1.2rem 2rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 2px 12px 0 rgba(79, 138, 139, 0.10);
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.03em;
+}
+
+button, .btn-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-radius: 999px;
+  padding: 0.7em 1.6em;
+  font-weight: 600;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 1.08rem;
+  border: none;
+  box-shadow: 0 2px 8px 0 rgba(79, 138, 139, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+button:hover, .btn-primary:hover {
+  background: #35797a;
+  box-shadow: 0 4px 16px 0 rgba(79, 138, 139, 0.18);
+}
+
+input, textarea, select {
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  padding: 0.7em 1em;
+  font-family: 'Poppins', Arial, sans-serif;
+  font-size: 1rem;
+  background: #181A20;
+  color: #fff;
+  margin-bottom: 1rem;
+  transition: border 0.2s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #23262F;
+}
+::-webkit-scrollbar-thumb {
+  background: #4F8A8B;
+  border-radius: 8px;
+}
+
 .monaco-editor .margin {
-  @apply !bg-neutral-900;
+  background: #23262F !important;
 }
 .monaco-editor .monaco-editor-background {
-  @apply !bg-neutral-900;
+  background: #181A20 !important;
 }
 .monaco-editor .line-numbers {
-  @apply !text-neutral-500;
+  color: #FBD46D !important;
 }
 
 .matched-line {
-  @apply bg-sky-500/30;
+  background: #4F8A8B33 !important;
 }

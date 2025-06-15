@@ -76,7 +76,7 @@ function LoadButton({
           </header>
           <main className="px-4 pt-3 pb-4 space-y-3">
             <p className="text-sm text-neutral-300 bg-neutral-300/15 border border-neutral-300/15 rounded-md px-3 py-2">
-              Load an existing DeepSite Space to continue working on it.
+              Load an existing Asho website modifer Space to continue working on it.
             </p>
             <label className="block">
               <p className="text-muted-foreground text-sm mb-1.5">Space URL</p>

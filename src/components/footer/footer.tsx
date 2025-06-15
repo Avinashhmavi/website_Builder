@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { FaMobileAlt, FaUserCircle } from "react-icons/fa";
-import { ChevronDown, LogOut, RefreshCcw, SparkleIcon } from "lucide-react";
+import { ChevronDown, LogOut, RefreshCcw } from "lucide-react";
 import { FaLaptopCode } from "react-icons/fa6";
 import { Auth, HtmlHistory } from "../../../utils/types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -79,7 +79,7 @@ function Footer({
                           "E"}
                       </AvatarFallback>
                     </Avatar>
-                    {auth?.preferred_username ?? "enzostvs"}
+                    {auth?.preferred_username ?? "Avinash"}
                   </p>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="start">
@@ -131,15 +131,6 @@ function Footer({
         )}
       </div>
       <div className="flex justify-end items-center gap-2.5">
-        <a
-          href="https://huggingface.co/spaces/victor/deepsite-gallery"
-          target="_blank"
-        >
-          <Button size="sm" variant="ghost">
-            <SparkleIcon className="size-3.5" />
-            <span className="max-lg:hidden">DeepSite Gallery</span>
-          </Button>
-        </a>
         <Button size="sm" variant="default" onClick={handleRefreshIframe}>
           <RefreshCcw className="size-3.5" />
           <span className="max-lg:hidden">Refresh Preview</span>
