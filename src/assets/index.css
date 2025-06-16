@@ -119,6 +119,35 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.light {
+  --background: #f6f6f6;
+  --foreground: #181A20;
+  --card: #fff;
+  --card-foreground: #181A20;
+  --popover: #fff;
+  --popover-foreground: #181A20;
+  --primary: #4F8A8B;
+  --primary-foreground: #fff;
+  --secondary: #FBD46D;
+  --secondary-foreground: #181A20;
+  --muted: #e0e0e0;
+  --muted-foreground: #4F8A8B;
+  --accent: #FBD46D;
+  --accent-foreground: #181A20;
+  --destructive: #ffb4b4;
+  --border: #e0e0e0;
+  --input: #e0e0e0;
+  --ring: #4F8A8B;
+  --sidebar: #fff;
+  --sidebar-foreground: #181A20;
+  --sidebar-primary: #4F8A8B;
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: #FBD46D;
+  --sidebar-accent-foreground: #181A20;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #4F8A8B;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -137,6 +166,7 @@ body {
 
 .card, .preview-card {
   background: var(--card);
+  color: var(--card-foreground);
   border-radius: var(--radius);
   box-shadow: 0 4px 24px 0 rgba(79, 138, 139, 0.10);
   padding: 2rem 2.5rem;
@@ -146,8 +176,8 @@ body {
 }
 
 header, .header-bar {
-  background: linear-gradient(90deg, #23262F 60%, #4F8A8B 100%);
-  color: #fff;
+  background: linear-gradient(90deg, var(--card) 60%, var(--primary) 100%);
+  color: var(--card-foreground);
   padding: 1.2rem 2rem;
   border-radius: 0 0 var(--radius) var(--radius);
   box-shadow: 0 2px 12px 0 rgba(79, 138, 139, 0.10);
@@ -155,6 +185,12 @@ header, .header-bar {
   font-weight: 700;
   font-size: 1.5rem;
   letter-spacing: 0.03em;
+}
+
+footer, .footer-bar {
+  background: var(--card);
+  color: var(--card-foreground);
+  border-top: 1px solid var(--border);
 }
 
 button, .btn-primary {
@@ -211,4 +247,10 @@ input:focus, textarea:focus, select:focus {
 
 .matched-line {
   background: #4F8A8B33 !important;
+}
+
+/* Ensure device toggle icons are always visible */
+.device-toggle-btn svg {
+  color: #fff !important;
+  fill: #fff !important;
 }

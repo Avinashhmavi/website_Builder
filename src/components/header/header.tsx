@@ -3,6 +3,7 @@ import { Eye, MessageCircleCode } from "lucide-react";
 
 import { Button } from "./../../components/ui/button";
 import classNames from "classnames";
+import { ModeToggle } from "../theme/mode-toggle";
 
 const TABS = [
   {
@@ -56,7 +57,10 @@ function Header({
           </Button>
         ))}
       </div>
-      <div className="flex items-center justify-end gap-3">{children}</div>
+      <div className="flex items-center justify-end gap-3">
+        <ModeToggle />
+        {children}
+      </div>
     </header>
   );
 }

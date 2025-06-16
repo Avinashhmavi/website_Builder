@@ -10,7 +10,6 @@ import Login from "../login/login";
 import { defaultHTML } from "../../../utils/consts";
 import SuccessSound from "./../../assets/success.mp3";
 import Settings from "../settings/settings";
-import ProModal from "../pro-modal/pro-modal";
 import { Button } from "../ui/button";
 // @ts-expect-error not needed
 import { MODELS } from "../../../utils/providers";
@@ -46,7 +45,6 @@ function AskAI({
   const [model, setModel] = useLocalStorage("model", MODELS[0].value);
   const [openProvider, setOpenProvider] = useState(false);
   const [providerError, setProviderError] = useState("");
-  const [openProModal, setOpenProModal] = useState(false);
   const [think, setThink] = useState<string | undefined>(undefined);
   const [openThink, setOpenThink] = useState(false);
   const [isThinking, setIsThinking] = useState(true);
@@ -95,8 +93,6 @@ function AskAI({
             } else if (res.openSelectProvider) {
               setOpenProvider(true);
               setProviderError(res.message);
-            } else if (res.openProModal) {
-              setOpenProModal(true);
             } else {
               toast.error(res.message);
             }
@@ -133,8 +129,6 @@ function AskAI({
             } else if (res.openSelectProvider) {
               setOpenProvider(true);
               setProviderError(res.message);
-            } else if (res.openProModal) {
-              setOpenProModal(true);
             } else {
               toast.error(res.message);
             }
@@ -379,11 +373,6 @@ function AskAI({
           </p>
         </Login>
       </div>
-      <ProModal
-        html={html}
-        open={openProModal}
-        onClose={() => setOpenProModal(false)}
-      />
     </div>
   );
 }

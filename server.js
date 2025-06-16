@@ -371,13 +371,7 @@ app.post("/api/ask-ai", async (req, res) => {
     // End the response stream
     res.end();
   } catch (error) {
-    if (error.message.includes("exceeded your monthly included credits")) {
-      return res.status(402).send({
-        ok: false,
-        openProModal: true,
-        message: error.message,
-      });
-    }
+    // Removed quota/credit check for unlimited use
     if (!res.headersSent) {
       res.status(500).send({
         ok: false,
@@ -598,19 +592,16 @@ ${REPLACE_END}
       });
     }
   } catch (error) {
-    if (error.message.includes("exceeded your monthly included credits")) {
-      return res.status(402).send({
-        ok: false,
-        openProModal: true,
-        message: error.message,
-      });
-    }
+    // Removed quota/credit check for unlimited use
     if (!res.headersSent) {
       res.status(500).send({
         ok: false,
         message:
           error.message || "An error occurred while processing your request.",
       });
+    } else {
+      // Otherwise end the stream
+      res.end();
     }
   }
 });

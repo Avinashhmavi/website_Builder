@@ -131,32 +131,29 @@ function Footer({
         )}
       </div>
       <div className="flex justify-end items-center gap-2.5">
-        <Button size="sm" variant="default" onClick={handleRefreshIframe}>
+        <Button size="sm" variant="default" onClick={handleRefreshIframe} className="!bg-neutral-800 !text-white !border-none hover:!bg-neutral-700">
           <RefreshCcw className="size-3.5" />
           <span className="max-lg:hidden">Refresh Preview</span>
         </Button>
-        <div className="flex items-center rounded-full p-0.5 bg-neutral-700/70 relative overflow-hidden z-0 max-lg:hidden gap-0.5">
+        <div className="flex items-center rounded-full p-0.5 bg-neutral-800 relative overflow-hidden z-0 max-lg:hidden gap-0.5 border border-neutral-700">
           <div
             className={classNames(
-              "absolute left-0.5 top-0.5 rounded-full bg-white size-7 -z-[1] transition-all duration-200",
-              {
-                "translate-x-[calc(100%+2px)]": device === "mobile",
-              }
+              "absolute left-0.5 top-0.5 rounded-full transition-all duration-200",
+              device === "mobile" ? "bg-teal-500 size-7" : "bg-gray-400 size-7"
             )}
+            style={{ transform: device === "mobile" ? "translateX(calc(100% + 2px))" : "none", zIndex: -1 }}
           />
           {DEVICES.map((deviceItem) => (
             <button
               key={deviceItem.name}
               className={classNames(
-                "rounded-full text-neutral-300 size-7 flex items-center justify-center cursor-pointer",
-                {
-                  "!text-black": device === deviceItem.name,
-                  "hover:bg-neutral-800": device !== deviceItem.name,
-                }
+                "device-toggle-btn rounded-full size-7 flex items-center justify-center cursor-pointer transition-colors duration-200",
+                device === deviceItem.name ? "bg-teal-500" : "bg-neutral-700"
               )}
               onClick={() => setDevice(deviceItem.name as "desktop" | "mobile")}
+              style={{ boxShadow: device === deviceItem.name ? '0 0 0 2px #14b8a6' : 'none' }}
             >
-              <deviceItem.icon className="text-sm" />
+              <deviceItem.icon />
             </button>
           ))}
         </div>
